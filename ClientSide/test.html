@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Git Practice Project</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin-top: 100px;
+        }
+        .box {
+            background: white;
+            padding: 20px;
+            width: 300px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="box">
+        <h1>Git & GitHub Test!</h1>
+        <p id="message">Click the button to change text.</p>
+        <button onclick="changeText()">Click Me</button>
+        <h1>BUT WAIT</h1>
+        <h1>BUT its not reflecting on main branch</h1>
+    </div>
+
+    <script>
+        function changeText() {
+            document.getElementById("message").innerText = "Text Changed Successfully!";
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+mostly its this the following i use always
+
+git add . (bro just add everything just make sure it works before you push it ok VERY IMPORTANT BTW)
+git commit -am "message"
+
+git push origin master
+git remote add origin (link)
+
+tutorial that helped me aside from the official documentation for using vscode to github
+https://www.youtube.com/watch?v=z5jZ9lrSpqk&t=619s

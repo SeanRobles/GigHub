@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GigHub – Dashboard</title>
+  <link rel="stylesheet" href="../css/gighub.css" />
+</head>
+<body>
+
+<div class="dash-shell" id="dashShell" data-role="freelancer">
+
+  <!-- ═══════════════════════════════════════════
+       SIDEBAR
+       ═══════════════════════════════════════════ -->
+  <aside class="dash-sidebar" id="sidebar">
+
+    <div class="dash-sidebar__brand">
+      <img src="../Images/GIGHUBLOGO ONLY.PNG" alt="GigHub" class="dash-sidebar__logo"
+        onerror="this.style.display='none';document.getElementById('sb-fb').style.display='flex';"/>
+      <div id="sb-fb" class="dash-sidebar__logo-fb" style="display:none;">
+        <svg width="22" height="22" viewBox="0 0 80 80" fill="none">
+          <polygon points="40,10 44,24 58,24 47,33 51,47 40,38 29,47 33,33 22,24 36,24" fill="#f5a623"/>
+        </svg>
+      </div>
+      <span class="dash-sidebar__name">GigHub</span>
+    </div>
+
+    <nav class="dash-nav" id="dashNav">
+      <button class="dash-nav__item active" data-page="dashboard" onclick="setPage(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+        </svg>
+        Dashboard
+      </button>
+
+      <button class="dash-nav__item" id="navServices" data-page="services" onclick="setPage(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+        <span id="navServicesLabel">My Services</span>
+      </button>
+
+      <button class="dash-nav__item" data-page="profile" onclick="setPage(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        Profile
+      </button>
+
+      <button class="dash-nav__item" data-page="messages" onclick="setPage(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Messages
+      </button>
+
+      <button class="dash-nav__item" data-page="settings" onclick="setPage(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        Settings
+      </button>
+    </nav>
+
+    <div class="dash-sidebar__footer">GigHub</div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN
+       ═══════════════════════════════════════════ -->
+  <div class="dash-main">
+
+    <!-- Topbar -->
+    <header class="dash-topbar">
+      <div class="dash-topbar__user">
+        <div class="dash-topbar__avatar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1b3d7a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <span class="dash-topbar__username">Jane Doe</span>
+      </div>
+
+      <div class="dash-topbar__right">
+        <button class="dash-change-role" onclick="openRoleModal()">Change Role</button>
+        <button class="dash-notif-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span class="dash-notif-badge"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ── Content ───────────────────────────── -->
+    <div class="dash-content">
+
+      <!-- DASHBOARD PAGE -->
+      <div id="page-dashboard">
+
+        <!-- Welcome banner -->
+        <div class="dash-welcome">
+          <div class="dash-welcome__text">
+            <h2 id="welcomeTitle">Welcome, Providers!</h2>
+            <p id="welcomeDesc">Connect with clients who value your expertise and grow your freelancing career with confidence.</p>
+          </div>
+          <div class="dash-welcome__stats">
+            <div class="dash-wstat"><div class="dash-wstat__num">10,000+</div><div class="dash-wstat__lbl">Services</div></div>
+            <div class="dash-wstat"><div class="dash-wstat__num">1,200</div><div class="dash-wstat__lbl">Sellers</div></div>
+            <div class="dash-wstat"><div class="dash-wstat__num">98%</div><div class="dash-wstat__lbl">Satisfaction</div></div>
+          </div>
+        </div>
+
+        <!-- Stat cards -->
+        <div class="dash-stats-row">
+          <div class="dash-stat-card">
+            <div class="dash-stat-card__icon" style="background:#eef6ff;">💼</div>
+            <div class="dash-stat-card__num" id="statGigs">8</div>
+            <div class="dash-stat-card__lbl" id="statGigsLbl">Active Gigs</div>
+            <div class="dash-stat-card__change up">↑ 2 this month</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-card__icon" style="background:#f0fdf4;">📦</div>
+            <div class="dash-stat-card__num" id="statOrders">14</div>
+            <div class="dash-stat-card__lbl" id="statOrdersLbl">Active Orders</div>
+            <div class="dash-stat-card__change up">↑ 5 this week</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-card__icon" style="background:#fffbeb;">⭐</div>
+            <div class="dash-stat-card__num">4.9</div>
+            <div class="dash-stat-card__lbl">Avg Rating</div>
+            <div class="dash-stat-card__change up">↑ 0.1 vs last month</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-card__icon" style="background:#fdf4ff;">💰</div>
+            <div class="dash-stat-card__num" id="statMoney">₱12,400</div>
+            <div class="dash-stat-card__lbl" id="statMoneyLbl">Earnings</div>
+            <div class="dash-stat-card__change up">↑ ₱2,100 this month</div>
+          </div>
+        </div>
+
+        <!-- Lower panels -->
+        <div class="dash-lower">
+          <div class="dash-panel">
+            <div class="dash-panel__header">
+              <span class="dash-panel__title" id="ordersTitle">Recent Orders</span>
+              <a class="dash-panel__link">View all →</a>
+            </div>
+            <table class="dash-table">
+              <thead><tr><th>Client / Gig</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>Logo Design</strong><br><span style="color:#8a9baa;font-size:.74rem;">Mark Santos</span></td>
+                  <td style="color:#8a9baa;">Mar 6</td><td>₱1,200</td>
+                  <td><span class="dash-badge dash-badge--green">Completed</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Website Redesign</strong><br><span style="color:#8a9baa;font-size:.74rem;">Ana Reyes</span></td>
+                  <td style="color:#8a9baa;">Mar 5</td><td>₱5,800</td>
+                  <td><span class="dash-badge dash-badge--blue">In Progress</span></td>
+                </tr>
+                <tr>
+                  <td><strong>SEO Audit</strong><br><span style="color:#8a9baa;font-size:.74rem;">Rico Bautista</span></td>
+                  <td style="color:#8a9baa;">Mar 3</td><td>₱900</td>
+                  <td><span class="dash-badge dash-badge--yellow">Pending</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Social Media Kit</strong><br><span style="color:#8a9baa;font-size:.74rem;">Liza Torres</span></td>
+                  <td style="color:#8a9baa;">Mar 1</td><td>₱2,500</td>
+                  <td><span class="dash-badge dash-badge--green">Completed</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="dash-panel">
+            <div class="dash-panel__header">
+              <span class="dash-panel__title">Recent Activity</span>
+              <a class="dash-panel__link">Clear all</a>
+            </div>
+            <div class="dash-activity-item">
+              <div class="dash-activity-dot" style="background:#22c55e;"></div>
+              <div><div class="dash-activity-text">New order from <strong>Mark Santos</strong></div><div class="dash-activity-time">2 hours ago</div></div>
+            </div>
+            <div class="dash-activity-item">
+              <div class="dash-activity-dot" style="background:#00c8ef;"></div>
+              <div><div class="dash-activity-text"><strong>Ana Reyes</strong> sent a message</div><div class="dash-activity-time">4 hours ago</div></div>
+            </div>
+            <div class="dash-activity-item">
+              <div class="dash-activity-dot" style="background:#f5a623;"></div>
+              <div><div class="dash-activity-text"><strong>"Logo Design"</strong> got a 5★ review</div><div class="dash-activity-time">Yesterday</div></div>
+            </div>
+            <div class="dash-activity-item">
+              <div class="dash-activity-dot" style="background:#a78bfa;"></div>
+              <div><div class="dash-activity-text">Payment of <strong>₱1,200</strong> released</div><div class="dash-activity-time">Mar 6</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /#page-dashboard -->
+
+
+      <!-- SERVICES PAGE -->
+      <div id="page-services" style="display:none;">
+
+        <!-- Add service toolbar -->
+        <div class="services-toolbar">
+          <button class="services-add-btn" onclick="openAddService()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            Add Service
+          </button>
+        </div>
+
+        <!-- My Services header bar -->
+        <div class="services-header-bar">My Services</div>
+
+        <!-- Filter tabs -->
+        <div class="services-tabs">
+          <button class="services-tab active" onclick="filterServices('all', this)">All</button>
+          <button class="services-tab" onclick="filterServices('completed', this)">Completed</button>
+          <button class="services-tab" onclick="filterServices('uncompleted', this)">Uncompleted</button>
+        </div>
+
+        <!-- Services grid -->
+        <div class="services-grid" id="servicesGrid">
+          <!-- Populated by JS -->
+        </div>
+
+      </div><!-- /#page-services -->
+
+
+      <!-- PROFILE PAGE (placeholder) -->
+      <div id="page-profile" style="display:none;">
+        <div class="dash-panel" style="max-width:600px;">
+          <div class="dash-panel__header"><span class="dash-panel__title">My Profile</span></div>
+          <p style="color:#7a8fa0;font-size:.88rem;">Profile editing coming soon.</p>
+        </div>
+      </div>
+
+      <!-- MESSAGES PAGE (placeholder) -->
+      <div id="page-messages" style="display:none;">
+        <div class="dash-panel">
+          <div class="dash-panel__header"><span class="dash-panel__title">Messages</span></div>
+          <p style="color:#7a8fa0;font-size:.88rem;">No messages yet.</p>
+        </div>
+      </div>
+
+      <!-- SETTINGS PAGE (placeholder) -->
+      <div id="page-settings" style="display:none;">
+        <div class="dash-panel" style="max-width:600px;">
+          <div class="dash-panel__header"><span class="dash-panel__title">Settings</span></div>
+          <p style="color:#7a8fa0;font-size:.88rem;">Settings coming soon.</p>
+        </div>
+      </div>
+
+    </div><!-- /.dash-content -->
+  </div><!-- /.dash-main -->
+</div><!-- /.dash-shell -->
+
+
+<!-- ═══════════════════════════════════════════
+     ROLE SWITCH MODAL
+     ═══════════════════════════════════════════ -->
+<div class="role-modal-overlay" id="roleModalOverlay">
+  <div class="role-modal">
+    <div class="role-modal__title">Switch Your Role</div>
+    <div class="role-modal__sub">Choose how you want to use GigHub right now.</div>
+    <div class="role-modal__options">
+      <div class="role-option" id="roleOptClient" onclick="selectRole('client')">
+        <div class="role-option__icon">🏢</div>
+        <div class="role-option__label">Client</div>
+        <div class="role-option__desc">Post jobs & hire talent</div>
+      </div>
+      <div class="role-option selected" id="roleOptFreelancer" onclick="selectRole('freelancer')">
+        <div class="role-option__icon">💼</div>
+        <div class="role-option__label">Freelancer</div>
+        <div class="role-option__desc">Offer services & earn</div>
+      </div>
+    </div>
+    <button class="role-modal__confirm" onclick="confirmRole()">Confirm Role</button>
+  </div>
+</div>
+
+
+<!-- ADD SERVICE MODAL -->
+<div class="role-modal-overlay" id="addServiceOverlay">
+  <div class="role-modal" style="width:480px;">
+    <div class="role-modal__title">Add New Service</div>
+    <div class="role-modal__sub">Fill in the details for your new gig</div>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
+      <input id="svcTitle"    class="auth-field__input" type="text"   placeholder="Service title" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;" />
+      <input id="svcPrice"    class="auth-field__input" type="text"   placeholder="Price (e.g. ₱1,500)" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;" />
+      <select id="svcCategory" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;color:#4a5a6a;">
+        <option value="">Category</option>
+        <option>Design</option><option>Development</option><option>Writing</option>
+        <option>Marketing</option><option>Video & Animation</option><option>Other</option>
+      </select>
+      <textarea id="svcDesc" placeholder="Short description…" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;resize:vertical;min-height:80px;"></textarea>
+    </div>
+    <div style="display:flex;gap:12px;">
+      <button class="role-modal__confirm" onclick="saveService()" style="flex:1;">Save Service</button>
+      <button onclick="closeAddService()" style="flex:1;border:2px solid #e0e8f0;background:#fff;border-radius:999px;padding:13px;font-family:Poppins,sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;color:#7a8fa0;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  /* ── State ─────────────────────────────────── */
+  let currentRole = 'freelancer';
+  let pendingRole = 'freelancer';
+
+  const services = [
+    { id:1, title:'Logo Design',        price:'₱1,200', cat:'Design',      emoji:'🎨', status:'completed'  },
+    { id:2, title:'Website Redesign',   price:'₱5,800', cat:'Development', emoji:'💻', status:'uncompleted' },
+    { id:3, title:'Social Media Kit',   price:'₱2,500', cat:'Design',      emoji:'📱', status:'completed'  },
+    { id:4, title:'SEO Audit',          price:'₱900',   cat:'Marketing',   emoji:'📊', status:'uncompleted' },
+  ];
+
+  /* ── Page navigation ─────────────────────── */
+  function setPage(btn) {
+    const page = btn.dataset.page;
+    document.querySelectorAll('.dash-nav__item').forEach(el => el.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('[id^="page-"]').forEach(el => el.style.display = 'none');
+    document.getElementById('page-' + page).style.display = '';
+    if (page === 'services') renderServices('all');
+  }
+
+  /* ── Role modal ──────────────────────────── */
+  function openRoleModal() {
+    pendingRole = currentRole;
+    highlightRole(pendingRole);
+    document.getElementById('roleModalOverlay').classList.add('active');
+  }
+
+  function selectRole(r) {
+    pendingRole = r;
+    highlightRole(r);
+  }
+
+  function highlightRole(r) {
+    document.getElementById('roleOptClient').classList.toggle('selected',     r === 'client');
+    document.getElementById('roleOptFreelancer').classList.toggle('selected', r === 'freelancer');
+  }
+
+  function confirmRole() {
+    currentRole = pendingRole;
+    document.getElementById('roleModalOverlay').classList.remove('active');
+    applyTheme(currentRole);
+  }
+
+  document.getElementById('roleModalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+  });
+
+  /* ── Apply role & theme ───────────────────── */
+  function applyTheme(role) {
+    const shell = document.getElementById('dashShell');
+    const isFreelancer = role === 'freelancer';
+
+    /* Theme switch — just flip data-role */
+    shell.setAttribute('data-role', role);
+
+    /* Update topbar avatar stroke to match */
+    const avatarSvg = document.querySelector('.dash-topbar__avatar svg');
+    if (avatarSvg) avatarSvg.setAttribute('stroke', isFreelancer ? '#1b3d7a' : '#c06010');
+
+    /* Welcome banner */
+    document.getElementById('welcomeTitle').textContent =
+      isFreelancer ? 'Welcome, Providers!' : 'Welcome, Seekers!';
+    document.getElementById('welcomeDesc').textContent =
+      isFreelancer
+        ? 'Connect with clients who value your expertise and grow your freelancing career with confidence.'
+        : "Work with skilled professionals who can bring your ideas to life — efficiently and reliably";
+
+    /* Stat cards */
+    document.getElementById('statGigs').textContent       = isFreelancer ? '8'   : '5';
+    document.getElementById('statGigsLbl').textContent    = isFreelancer ? 'Active Gigs'      : 'Posted Jobs';
+    document.getElementById('statOrders').textContent     = isFreelancer ? '14'  : '7';
+    document.getElementById('statOrdersLbl').textContent  = isFreelancer ? 'Active Orders'     : 'Hired Freelancers';
+    document.getElementById('statMoney').textContent      = isFreelancer ? '₱12,400' : '₱28,600';
+    document.getElementById('statMoneyLbl').textContent   = isFreelancer ? 'Earnings'  : 'Total Spent';
+    document.getElementById('ordersTitle').textContent    = isFreelancer ? 'Recent Orders' : 'My Projects';
+
+    /* Sidebar nav label */
+    document.getElementById('navServicesLabel').textContent = isFreelancer ? 'My Services' : 'My Services';
+  }
+
+  /* ── Services ────────────────────────────── */
+  let activeFilter = 'all';
+
+  function filterServices(filter, btn) {
+    activeFilter = filter;
+    document.querySelectorAll('.services-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    renderServices(filter);
+  }
+
+  function renderServices(filter) {
+    const grid = document.getElementById('servicesGrid');
+    const filtered = filter === 'all' ? services : services.filter(s => s.status === filter);
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `
+        <div class="services-empty" style="grid-column:1/-1;">
+          <div class="services-empty__icon">📭</div>
+          <div class="services-empty__text">No services found.</div>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = filtered.map(s => {
+      const badgeColor = s.status === 'completed'
+        ? 'background:#dcfce7;color:#15803d;'
+        : 'background:#fef9c3;color:#92400e;';
+      return `
+        <div class="service-card">
+          <div class="service-card__img">${s.emoji}</div>
+          <div class="service-card__body">
+            <div class="service-card__title">${s.title}</div>
+            <div class="service-card__price">${s.price}</div>
+            <span class="service-card__status" style="${badgeColor}">
+              ${s.status.charAt(0).toUpperCase() + s.status.slice(1)}
+            </span>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  /* ── Add service modal ───────────────────── */
+  function openAddService() {
+    document.getElementById('addServiceOverlay').classList.add('active');
+  }
+
+  function closeAddService() {
+    document.getElementById('addServiceOverlay').classList.remove('active');
+  }
+
+  function saveService() {
+    const title = document.getElementById('svcTitle').value.trim();
+    const price = document.getElementById('svcPrice').value.trim();
+    if (!title || !price) return;
+    const emojis = ['🎨','💻','📱','📊','✍️','🎬'];
+    services.push({
+      id: Date.now(),
+      title,
+      price,
+      cat: document.getElementById('svcCategory').value || 'Other',
+      emoji: emojis[Math.floor(Math.random() * emojis.length)],
+      status: 'uncompleted'
+    });
+    closeAddService();
+    document.getElementById('svcTitle').value = '';
+    document.getElementById('svcPrice').value = '';
+    document.getElementById('svcCategory').value = '';
+    document.getElementById('svcDesc').value = '';
+    renderServices(activeFilter);
+  }
+
+  document.getElementById('addServiceOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeAddService();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.getElementById('roleModalOverlay').classList.remove('active');
+      closeAddService();
+    }
+  });
+</script>
+
+</body>
+</html>

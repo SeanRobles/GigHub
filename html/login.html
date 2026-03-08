@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GigHub – Sign In</title>
+  <link rel="stylesheet" href="../css/gighub.css" />
+</head>
+<body>
+
+  <div class="login-page">
+
+    <!-- ═══ NAVBAR ════════════════════════════ -->
+    <nav class="login-navbar">
+      <span class="login-navbar__name">GigHub</span>
+      <div class="login-navbar__links">
+        <a href="index.html" class="login-navbar__home">Home</a>
+        <a href="signup.html" class="login-navbar__signup">Sign Up</a>
+      </div>
+    </nav>
+
+    <!-- ═══ CARD ══════════════════════════════ -->
+    <div class="login-body">
+      <div class="login-card">
+
+        <!-- Logo -->
+        <img
+          src="GIGHUBLOGO ONLY.PNG"
+          alt="GigHub"
+          class="login-card__logo"
+          onerror="this.style.display='none';document.getElementById('logo-fb').style.display='flex';"
+        />
+        <!-- SVG fallback -->
+        <div id="logo-fb" class="login-card__logo-fb" style="display:none;">
+          <svg width="110" height="110" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="40" cy="40" r="37" fill="#e8f5fb" stroke="#3185a8" stroke-width="2.5"/>
+            <!-- Gear / world arcs -->
+            <ellipse cx="40" cy="44" rx="22" ry="14" fill="none" stroke="#3185a8" stroke-width="2"/>
+            <ellipse cx="40" cy="44" rx="10" ry="14" fill="none" stroke="#3185a8" stroke-width="1.5"/>
+            <line x1="18" y1="44" x2="62" y2="44" stroke="#3185a8" stroke-width="1.5"/>
+            <!-- Sparkle dots -->
+            <circle cx="18" cy="22" r="2" fill="#f5a623"/>
+            <circle cx="62" cy="22" r="2" fill="#f5a623"/>
+            <circle cx="40" cy="8"  r="2" fill="#f5a623"/>
+            <!-- Star -->
+            <polygon points="40,14 43.8,25.5 56,25.5 46.2,32.5 50,44 40,37 30,44 33.8,32.5 24,25.5 36.2,25.5" fill="#f5a623"/>
+            <!-- Person icon on star -->
+            <circle cx="40" cy="31" r="3.5" fill="#fff"/>
+            <path d="M33.5 40 Q40 35.5 46.5 40" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <!-- Fields -->
+        <div class="login-fields" id="loginFields">
+          <input
+            class="login-input"
+            type="text"
+            placeholder="Username"
+            id="username"
+            autocomplete="username"
+          />
+          <input
+            class="login-input"
+            type="password"
+            placeholder="Password"
+            id="password"
+            autocomplete="current-password"
+          />
+        </div>
+
+        <!-- Error -->
+        <p class="login-error" id="loginError">Incorrect username or password.</p>
+
+        <!-- Forgot password -->
+        <a href="forgot-password.html" class="login-forgot">Forgot Password?</a>
+
+        <!-- Sign In button -->
+        <button class="login-btn" onclick="handleLogin()">Sign In</button>
+
+      </div>
+    </div>
+
+  </div><!-- /.login-page -->
+
+  <script>
+    function handleLogin() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const errorEl  = document.getElementById('loginError');
+      const fields   = document.getElementById('loginFields');
+
+      errorEl.classList.remove('visible');
+
+      if (!username || !password) {
+        errorEl.textContent = 'Please enter your username and password.';
+        errorEl.classList.add('visible');
+        fields.style.animation = 'none';
+        requestAnimationFrame(() => { fields.style.animation = 'loginShake 0.4s ease'; });
+        return;
+      }
+
+      // ── Production: POST to your auth API ──────────────
+      // fetch('/api/auth/login', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ username, password })
+      // })
+      // .then(r => r.json())
+      // .then(data => {
+      //   if (data.success) window.location.href = 'dashboard.html';
+      //   else showError(data.message);
+      // });
+
+      // Demo: simulate successful login
+      const btn = document.querySelector('.login-btn');
+      btn.textContent = 'Signing in…';
+      btn.style.opacity = '0.75';
+      btn.style.pointerEvents = 'none';
+
+      setTimeout(() => {
+        // Redirect to dashboard (replace with your actual dashboard page)
+        window.location.href = 'dashboard.html';
+      }, 1200);
+    }
+
+    // Allow Enter key to submit
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleLogin();
+    });
+  </script>
+
+</body>
+</html>

@@ -234,13 +234,227 @@
       </div><!-- /#page-services -->
 
 
-      <!-- PROFILE PAGE (placeholder) -->
+      <!-- PROFILE PAGE — role-aware, fully editable -->
       <div id="page-profile" style="display:none;">
-        <div class="dash-panel" style="max-width:600px;">
-          <div class="dash-panel__header"><span class="dash-panel__title">My Profile</span></div>
-          <p style="color:#7a8fa0;font-size:.88rem;">Profile editing coming soon.</p>
-        </div>
-      </div>
+        <div class="profile-page" id="profilePage">
+
+          <!-- ── Hero card ── -->
+          <div class="profile-hero">
+            <div class="profile-hero__banner"></div>
+            <div class="profile-hero__body">
+              <div class="profile-hero__avatar-wrap">
+                <div class="profile-hero__avatar" id="profileAvatarDisplay">👤</div>
+                <div class="profile-hero__avatar-edit" onclick="document.getElementById('avatarInput').click()" title="Change photo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                </div>
+                <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="handleAvatarChange(event)" />
+              </div>
+
+              <div class="profile-hero__info">
+                <div>
+                  <div class="profile-hero__name" id="profileNameDisplay">Jane Doe</div>
+                  <div class="profile-hero__title" id="profileTitleDisplay">Software Engineer &amp; UI/UX Designer</div>
+                  <div class="profile-hero__since">Member since 2023</div>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap;">
+                  <div class="profile-hero__meta" id="profileMetaDisplay">
+                    English and Tagalog<br>Manila, Philippines
+                  </div>
+                  <button class="profile-edit-btn" id="editProfileBtn" onclick="toggleProfileEdit()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    Edit
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="profile-hero__bio" id="profileBioDisplay">
+              I help startups and small businesses turn ideas into clean, user-friendly interfaces. With 5+ years of experience in product design, I specialize in mobile apps, dashboards, and landing pages.
+            </div>
+          </div>
+
+          <!-- ── Main 2-col grid ── -->
+          <div class="profile-grid">
+
+            <!-- LEFT: Skills & Tools -->
+            <div class="profile-panel" id="panelSkills">
+              <div class="profile-panel__header">
+                <span class="profile-panel__title">Skills and Tools</span>
+              </div>
+              <div class="profile-panel__body">
+                <div class="prof-field">
+                  <div class="prof-field__label">Primary skill</div>
+                  <input class="prof-field__value" id="pfSkill" value="UI/UX Design" readonly />
+                </div>
+                <div class="prof-field">
+                  <div class="prof-field__label">Frequently Used Tools</div>
+                  <input class="prof-field__value" id="pfTools" value="Figma, Adobe XD, Sketch" readonly />
+                </div>
+                <div class="prof-field">
+                  <div class="prof-field__label">Skill proficiency level</div>
+                  <input class="prof-field__value" id="pfLevel" value="Expert" readonly />
+                </div>
+                <div class="prof-field">
+                  <div class="prof-field__label">Years of experience</div>
+                  <input class="prof-field__value" id="pfYears" value="6 years" readonly />
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT: Reviews from Freelancers -->
+            <div class="profile-panel">
+              <div class="profile-panel__header">
+                <span class="profile-panel__title">Reviews from Freelancers</span>
+                <div class="profile-panel__badge">⭐ 4.9</div>
+              </div>
+              <div class="profile-panel__body">
+                <div class="review-item">
+                  <div class="review-avatar">M</div>
+                  <div>
+                    <div class="review-text">Absolutely blown away by the quality of work. I hired a freelancer for a logo redesign and got the final files within 48 hours. Communication was smooth the…</div>
+                    <div class="review-stars">★★★★☆</div>
+                  </div>
+                </div>
+                <div class="review-item">
+                  <div class="review-avatar" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">A</div>
+                  <div>
+                    <div class="review-text">I was skeptical at first, but this platform completely changed how I outsource work. Found a web developer who understood my vision…</div>
+                    <div class="review-stars">★★★☆☆</div>
+                  </div>
+                </div>
+                <div class="review-item">
+                  <div class="review-avatar" style="background:linear-gradient(135deg,#0ea5e9,#38bdf8)">R</div>
+                  <div>
+                    <div class="review-text">Great experience overall. The freelancer I worked with was professional and talented. Only minor issue was a small delay on the first draft, but they…</div>
+                    <div class="review-stars">★★★★☆</div>
+                  </div>
+                </div>
+                <div class="review-item">
+                  <div class="review-avatar" style="background:linear-gradient(135deg,#16a34a,#4ade80)">L</div>
+                  <div>
+                    <div class="review-text">I've tried other freelance platforms before and nothing compares. The talent here is seriously top-tier. My content writer nailed the brand voice on the…</div>
+                    <div class="review-stars">★★★★☆</div>
+                  </div>
+                </div>
+                <div class="reviews-viewall">View All</div>
+              </div>
+            </div>
+
+            <!-- LEFT BOTTOM: Rates + Portfolio + Activity -->
+            <div style="display:flex;flex-direction:column;gap:20px;">
+
+              <!-- Rates and Payments -->
+              <div class="profile-panel">
+                <div class="profile-panel__header">
+                  <span class="profile-panel__title">Rates and Payments</span>
+                </div>
+                <div class="profile-panel__body">
+                  <div class="rates-row">
+                    <span class="rates-label">Hourly Rate</span>
+                    <span style="font-size:.78rem;color:#8a9baa;">₱</span>
+                    <input class="rates-pill" id="pfHourly" value="3,800" readonly style="width:80px;text-align:center;" />
+                    <span style="font-size:.78rem;color:#8a9baa;">/hr</span>
+                  </div>
+                  <div class="rates-row">
+                    <span class="rates-label">Fixed Project Rate</span>
+                    <span style="font-size:.78rem;color:#8a9baa;">₱</span>
+                    <input class="rates-pill" id="pfFixedMin" value="46,000" readonly style="width:88px;text-align:center;" />
+                    <span class="rates-sep">–</span>
+                    <input class="rates-pill" id="pfFixedMax" value="464,000" readonly style="width:96px;text-align:center;" />
+                  </div>
+                  <div class="rates-row">
+                    <span class="rates-label">Preferred Payment Method</span>
+                    <input class="rates-pill" id="pfPayment" value="Bank Transfer/E-Wallet" readonly style="width:auto;flex:1;" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Portfolio -->
+              <div class="profile-panel">
+                <div class="profile-panel__header">
+                  <span class="profile-panel__title">Portfolio</span>
+                </div>
+                <div class="profile-panel__body">
+                  <button class="portfolio-btn" onclick="togglePortfolioView()">
+                    <span>View Full Portfolio</span>
+                    <div class="portfolio-btn__icon">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+                        <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+                      </svg>
+                    </div>
+                  </button>
+
+                  <!-- No portfolio yet -->
+                  <div id="portfolioEmpty" style="display:block;">
+                    <div class="portfolio-upload" onclick="document.getElementById('portfolioPdfInput').click()">
+                      <div class="portfolio-upload__icon">📄</div>
+                      <div class="portfolio-upload__text">
+                        No portfolio uploaded yet.<br>
+                        <span class="portfolio-upload__link">Click to upload a PDF</span> of your professional portfolio.
+                      </div>
+                    </div>
+                    <input type="file" id="portfolioPdfInput" accept="application/pdf" style="display:none" onchange="handlePortfolioUpload(event)" />
+                  </div>
+
+                  <!-- Portfolio uploaded -->
+                  <div id="portfolioFile" style="display:none;">
+                    <div class="portfolio-file-display">
+                      <div class="portfolio-file-icon">📄</div>
+                      <div class="portfolio-file-name" id="portfolioFileName">portfolio.pdf</div>
+                      <button class="portfolio-file-remove" onclick="removePortfolio()">✕ Remove</button>
+                    </div>
+                    <div style="display:flex;gap:10px;margin-top:10px;">
+                      <button onclick="viewPortfolioPdf()" style="flex:1;background:var(--cyan);color:#fff;border:none;border-radius:999px;padding:8px 12px;font-family:Poppins,sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;">View PDF</button>
+                      <button onclick="document.getElementById('portfolioPdfInput').click()" style="flex:1;background:#f0f4f8;color:#4a5a6a;border:none;border-radius:999px;padding:8px 12px;font-family:Poppins,sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;">Replace</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Activity -->
+              <div class="profile-panel">
+                <div class="profile-panel__header">
+                  <span class="profile-panel__title">Activity</span>
+                </div>
+                <div class="profile-panel__body">
+                  <div class="activity-boxes">
+                    <div class="activity-box"><div class="activity-box__num">25</div><div class="activity-box__lbl">Posted</div></div>
+                    <div class="activity-box"><div class="activity-box__num">14</div><div class="activity-box__lbl">Completed</div></div>
+                    <div class="activity-box"><div class="activity-box__num">7</div><div class="activity-box__lbl">Ongoing</div></div>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /left bottom stack -->
+
+            <!-- RIGHT BOTTOM: Education & Credentials -->
+            <div class="profile-panel">
+              <div class="profile-panel__header">
+                <span class="profile-panel__title">Education and Credentials</span>
+              </div>
+              <div class="profile-panel__body">
+                <div class="prof-field">
+                  <div class="prof-field__label">Degree / Field of Study</div>
+                  <input class="prof-field__value" id="pfDegree" value="B.S. in Computer Science" readonly />
+                </div>
+                <div class="prof-field">
+                  <div class="prof-field__label">Institution</div>
+                  <input class="prof-field__value" id="pfInstitution" value="University of the Philippines" readonly />
+                </div>
+                <div class="prof-field">
+                  <div class="prof-field__label">Year of Graduation</div>
+                  <input class="prof-field__value" id="pfGradYear" value="2019" readonly />
+                </div>
+                <div class="prof-field" style="margin-top:18px;">
+                  <div class="prof-field__label">Certifications</div>
+                  <input class="prof-field__value" id="pfCerts" value="Google UX Design Certificate" readonly />
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /.profile-grid -->
+        </div><!-- /.profile-page -->
+      </div><!-- /#page-profile -->
 
       <!-- MESSAGES PAGE (placeholder) -->
       <div id="page-messages" style="display:none;">
@@ -311,9 +525,37 @@
 
 
 <script>
-  /* ── State ─────────────────────────────────── */
+  /* ══════════════════════════════════════════
+     STATE
+     ══════════════════════════════════════════ */
   let currentRole = 'freelancer';
   let pendingRole = 'freelancer';
+  let isEditingProfile = false;
+  let portfolioObjectUrl = null;
+
+  /* Independent profiles per role */
+  const profiles = {
+    freelancer: {
+      name: 'Jane Doe', title: 'Software Engineer & UI/UX Designer',
+      bio: 'I help startups and small businesses turn ideas into clean, user-friendly interfaces. With 5+ years of experience in product design, I specialize in mobile apps, dashboards, and landing pages.',
+      languages: 'English and Tagalog', location: 'Manila, Philippines',
+      skill: 'UI/UX Design', tools: 'Figma, Adobe XD, Sketch', level: 'Expert', years: '6 years',
+      hourly: '3,800', fixedMin: '46,000', fixedMax: '464,000', payment: 'Bank Transfer/E-Wallet',
+      degree: 'B.S. in Computer Science', institution: 'University of the Philippines',
+      gradYear: '2019', certs: 'Google UX Design Certificate',
+      portfolioFile: null, portfolioFileName: null, avatarSrc: null,
+    },
+    client: {
+      name: 'Jane Doe', title: 'Product Manager at TechCorp',
+      bio: 'I work with talented freelancers to build digital products that solve real problems. Looking for skilled professionals to bring our product roadmap to life.',
+      languages: 'English', location: 'Quezon City, Philippines',
+      skill: 'Product Management', tools: 'Jira, Notion, Slack', level: 'Senior', years: '8 years',
+      hourly: '', fixedMin: '', fixedMax: '', payment: 'Credit Card/PayPal',
+      degree: 'B.S. in Business Administration', institution: 'Ateneo de Manila University',
+      gradYear: '2016', certs: 'PMP Certification',
+      portfolioFile: null, portfolioFileName: null, avatarSrc: null,
+    }
+  };
 
   const services = [
     { id:1, title:'Logo Design',        price:'₱1,200', cat:'Design',      emoji:'🎨', status:'completed'  },
@@ -322,7 +564,9 @@
     { id:4, title:'SEO Audit',          price:'₱900',   cat:'Marketing',   emoji:'📊', status:'uncompleted' },
   ];
 
-  /* ── Page navigation ─────────────────────── */
+  /* ══════════════════════════════════════════
+     PAGE NAVIGATION
+     ══════════════════════════════════════════ */
   function setPage(btn) {
     const page = btn.dataset.page;
     document.querySelectorAll('.dash-nav__item').forEach(el => el.classList.remove('active'));
@@ -330,69 +574,330 @@
     document.querySelectorAll('[id^="page-"]').forEach(el => el.style.display = 'none');
     document.getElementById('page-' + page).style.display = '';
     if (page === 'services') renderServices('all');
+    if (page === 'profile')  renderProfile();
   }
 
-  /* ── Role modal ──────────────────────────── */
+  /* ══════════════════════════════════════════
+     ROLE MODAL
+     ══════════════════════════════════════════ */
   function openRoleModal() {
     pendingRole = currentRole;
     highlightRole(pendingRole);
     document.getElementById('roleModalOverlay').classList.add('active');
   }
-
-  function selectRole(r) {
-    pendingRole = r;
-    highlightRole(r);
-  }
-
+  function selectRole(r) { pendingRole = r; highlightRole(r); }
   function highlightRole(r) {
     document.getElementById('roleOptClient').classList.toggle('selected',     r === 'client');
     document.getElementById('roleOptFreelancer').classList.toggle('selected', r === 'freelancer');
   }
-
   function confirmRole() {
     currentRole = pendingRole;
     document.getElementById('roleModalOverlay').classList.remove('active');
     applyTheme(currentRole);
+    // If profile page is open, re-render for new role
+    if (document.getElementById('page-profile').style.display !== 'none') renderProfile();
   }
-
   document.getElementById('roleModalOverlay').addEventListener('click', function(e) {
     if (e.target === this) this.classList.remove('active');
   });
 
-  /* ── Apply role & theme ───────────────────── */
+  /* ══════════════════════════════════════════
+     THEME & DASHBOARD CONTENT
+     ══════════════════════════════════════════ */
   function applyTheme(role) {
     const shell = document.getElementById('dashShell');
-    const isFreelancer = role === 'freelancer';
-
-    /* Theme switch — just flip data-role */
+    const isFL = role === 'freelancer';
     shell.setAttribute('data-role', role);
-
-    /* Update topbar avatar stroke to match */
     const avatarSvg = document.querySelector('.dash-topbar__avatar svg');
-    if (avatarSvg) avatarSvg.setAttribute('stroke', isFreelancer ? '#1b3d7a' : '#c06010');
-
-    /* Welcome banner */
-    document.getElementById('welcomeTitle').textContent =
-      isFreelancer ? 'Welcome, Providers!' : 'Welcome, Seekers!';
-    document.getElementById('welcomeDesc').textContent =
-      isFreelancer
-        ? 'Connect with clients who value your expertise and grow your freelancing career with confidence.'
-        : "Work with skilled professionals who can bring your ideas to life — efficiently and reliably";
-
-    /* Stat cards */
-    document.getElementById('statGigs').textContent       = isFreelancer ? '8'   : '5';
-    document.getElementById('statGigsLbl').textContent    = isFreelancer ? 'Active Gigs'      : 'Posted Jobs';
-    document.getElementById('statOrders').textContent     = isFreelancer ? '14'  : '7';
-    document.getElementById('statOrdersLbl').textContent  = isFreelancer ? 'Active Orders'     : 'Hired Freelancers';
-    document.getElementById('statMoney').textContent      = isFreelancer ? '₱12,400' : '₱28,600';
-    document.getElementById('statMoneyLbl').textContent   = isFreelancer ? 'Earnings'  : 'Total Spent';
-    document.getElementById('ordersTitle').textContent    = isFreelancer ? 'Recent Orders' : 'My Projects';
-
-    /* Sidebar nav label */
-    document.getElementById('navServicesLabel').textContent = isFreelancer ? 'My Services' : 'My Services';
+    if (avatarSvg) avatarSvg.setAttribute('stroke', isFL ? '#1b3d7a' : '#c06010');
+    document.getElementById('welcomeTitle').textContent = isFL ? 'Welcome, Providers!' : 'Welcome, Seekers!';
+    document.getElementById('welcomeDesc').textContent  = isFL
+      ? 'Connect with clients who value your expertise and grow your freelancing career with confidence.'
+      : 'Work with skilled professionals who can bring your ideas to life — efficiently and reliably';
+    document.getElementById('statGigs').textContent      = isFL ? '8'       : '5';
+    document.getElementById('statGigsLbl').textContent   = isFL ? 'Active Gigs'    : 'Posted Jobs';
+    document.getElementById('statOrders').textContent    = isFL ? '14'      : '7';
+    document.getElementById('statOrdersLbl').textContent = isFL ? 'Active Orders'   : 'Hired Freelancers';
+    document.getElementById('statMoney').textContent     = isFL ? '₱12,400' : '₱28,600';
+    document.getElementById('statMoneyLbl').textContent  = isFL ? 'Earnings' : 'Total Spent';
+    document.getElementById('ordersTitle').textContent   = isFL ? 'Recent Orders' : 'My Projects';
   }
 
-  /* ── Services ────────────────────────────── */
+  /* ══════════════════════════════════════════
+     PROFILE — render & edit (role-independent)
+     ══════════════════════════════════════════ */
+  function renderProfile() {
+    const p = profiles[currentRole];
+    exitProfileEdit(); // always start in view mode
+
+    /* Hero */
+    document.getElementById('profileNameDisplay').textContent  = p.name;
+    document.getElementById('profileTitleDisplay').textContent = p.title;
+    document.getElementById('profileBioDisplay').textContent   = p.bio;
+    document.getElementById('profileMetaDisplay').innerHTML    = p.languages + '<br>' + p.location;
+
+    /* Avatar */
+    const av = document.getElementById('profileAvatarDisplay');
+    if (p.avatarSrc) {
+      av.innerHTML = `<img src="${p.avatarSrc}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+    } else {
+      av.innerHTML = '👤';
+    }
+
+    /* Skills */
+    document.getElementById('pfSkill').value       = p.skill;
+    document.getElementById('pfTools').value       = p.tools;
+    document.getElementById('pfLevel').value       = p.level;
+    document.getElementById('pfYears').value       = p.years;
+
+    /* Rates */
+    document.getElementById('pfHourly').value      = p.hourly;
+    document.getElementById('pfFixedMin').value    = p.fixedMin;
+    document.getElementById('pfFixedMax').value    = p.fixedMax;
+    document.getElementById('pfPayment').value     = p.payment;
+
+    /* Education */
+    document.getElementById('pfDegree').value      = p.degree;
+    document.getElementById('pfInstitution').value = p.institution;
+    document.getElementById('pfGradYear').value    = p.gradYear;
+    document.getElementById('pfCerts').value       = p.certs;
+
+    /* Portfolio */
+    updatePortfolioUI(p);
+  }
+
+  /* Toggle edit / save */
+  function toggleProfileEdit() {
+    if (isEditingProfile) {
+      saveProfileEdit();
+    } else {
+      enterProfileEdit();
+    }
+  }
+
+  function enterProfileEdit() {
+    isEditingProfile = true;
+    const btn = document.getElementById('editProfileBtn');
+    btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Save`;
+
+    /* Make all profile fields editable */
+    const fields = ['pfSkill','pfTools','pfLevel','pfYears','pfHourly','pfFixedMin','pfFixedMax','pfPayment','pfDegree','pfInstitution','pfGradYear','pfCerts'];
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.removeAttribute('readonly');
+    });
+
+    /* Swap hero display elements to inputs */
+    replaceWithInput('profileNameDisplay',  'pf-edit-name',  profiles[currentRole].name,      '1.1rem','700');
+    replaceWithInput('profileTitleDisplay', 'pf-edit-title', profiles[currentRole].title,     '0.8rem','400');
+    replaceWithInput('profileBioDisplay',   'pf-edit-bio',   profiles[currentRole].bio,       '0.84rem','400', true);
+    replaceWithInput('profileMetaDisplay',  'pf-edit-meta',  profiles[currentRole].languages + '\n' + profiles[currentRole].location, '0.8rem','400', true);
+  }
+
+  function saveProfileEdit() {
+    const p = profiles[currentRole];
+
+    /* Hero fields */
+    const name      = getEditVal('pf-edit-name',  'profileNameDisplay').trim();
+    const title     = getEditVal('pf-edit-title', 'profileTitleDisplay').trim();
+    const bio       = getEditVal('pf-edit-bio',   'profileBioDisplay').trim();
+    const metaRaw   = getEditVal('pf-edit-meta', 'profileMetaDisplay').trim();
+    const metaLines = metaRaw.split('\n');
+    const languages = metaLines[0]?.trim() || '';
+    const location  = metaLines[1]?.trim() || '';
+
+    /* Fields */
+    const skill       = document.getElementById('pfSkill').value.trim();
+    const tools       = document.getElementById('pfTools').value.trim();
+    const level       = document.getElementById('pfLevel').value.trim();
+    const years       = document.getElementById('pfYears').value.trim();
+    const hourly      = document.getElementById('pfHourly').value.trim();
+    const fixedMin    = document.getElementById('pfFixedMin').value.trim();
+    const fixedMax    = document.getElementById('pfFixedMax').value.trim();
+    const payment     = document.getElementById('pfPayment').value.trim();
+    const degree      = document.getElementById('pfDegree').value.trim();
+    const institution = document.getElementById('pfInstitution').value.trim();
+    const gradYear    = document.getElementById('pfGradYear').value.trim();
+    const certs       = document.getElementById('pfCerts').value.trim();
+
+    /* Validate all fields are filled */
+    const errors = [];
+    if (!name) errors.push('Name is required');
+    if (!title) errors.push('Title/Role is required');
+    if (!bio) errors.push('Bio is required');
+    if (!languages) errors.push('Languages are required');
+    if (!location) errors.push('Location is required');
+    if (!skill) errors.push('Primary skill is required');
+    if (!tools) errors.push('Tools are required');
+    if (!level) errors.push('Proficiency level is required');
+    if (!years) errors.push('Years of experience are required');
+    if (!payment) errors.push('Preferred payment method is required');
+    if (!degree) errors.push('Degree is required');
+    if (!institution) errors.push('Institution is required');
+    if (!gradYear) errors.push('Graduation year is required');
+    if (!certs) errors.push('Certifications are required');
+
+    if (errors.length > 0) {
+      alert('Please fill in all fields before saving:\n\n• ' + errors.join('\n• '));
+      return;
+    }
+
+    /* Save validated data */
+    p.name       = name;
+    p.title      = title;
+    p.bio        = bio;
+    p.languages  = languages;
+    p.location   = location;
+    p.skill      = skill;
+    p.tools      = tools;
+    p.level      = level;
+    p.years      = years;
+    p.hourly     = hourly;
+    p.fixedMin   = fixedMin;
+    p.fixedMax   = fixedMax;
+    p.payment    = payment;
+    p.degree     = degree;
+    p.institution = institution;
+    p.gradYear   = gradYear;
+    p.certs      = certs;
+
+    /* Sync to database */
+    syncProfileToDatabase();
+
+    exitProfileEdit();
+    renderProfile();
+    alert('Profile saved successfully!');
+  }
+
+  function exitProfileEdit() {
+    isEditingProfile = false;
+    const btn = document.getElementById('editProfileBtn');
+    if (btn) btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Edit`;
+    const fields = ['pfSkill','pfTools','pfLevel','pfYears','pfHourly','pfFixedMin','pfFixedMax','pfPayment','pfDegree','pfInstitution','pfGradYear','pfCerts'];
+    fields.forEach(id => { const el = document.getElementById(id); if(el) el.setAttribute('readonly',''); });
+  }
+
+  function replaceWithInput(displayId, inputId, value, fontSize, fontWeight, isTextarea) {
+    const el = document.getElementById(displayId);
+    if (!el) return;
+    const tag = isTextarea ? 'textarea' : 'input';
+    const style = `font-family:Poppins,sans-serif;font-size:${fontSize};font-weight:${fontWeight};color:#1a2a3a;background:#f7fbff;border:1.5px solid #c8daf0;border-radius:8px;padding:6px 10px;width:100%;outline:none;resize:vertical;`;
+    el.style.display = 'none';
+    const wrapper = document.createElement('div');
+    wrapper.id = inputId + '-wrap';
+    const input = document.createElement(tag);
+    input.id = inputId;
+    input.value = value;
+    input.style.cssText = style;
+    if (isTextarea) input.rows = 3;
+    wrapper.appendChild(input);
+    el.parentNode.insertBefore(wrapper, el.nextSibling);
+  }
+
+  function getEditVal(inputId, fallbackId) {
+    const input = document.getElementById(inputId);
+    const wrap  = document.getElementById(inputId + '-wrap');
+    if (input) {
+      const val = input.value;
+      if (wrap) wrap.remove();
+      const display = document.getElementById(fallbackId);
+      if (display) display.style.display = '';
+      return val;
+    }
+    return document.getElementById(fallbackId)?.textContent || '';
+  }
+
+  /* ── Avatar upload ───────────────────────── */
+  function handleAvatarChange(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      profiles[currentRole].avatarSrc = e.target.result;
+      const av = document.getElementById('profileAvatarDisplay');
+      av.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  /* ══════════════════════════════════════════
+     PORTFOLIO PDF
+     ══════════════════════════════════════════ */
+  function handlePortfolioUpload(event) {
+    const file = event.target.files[0];
+    if (!file || file.type !== 'application/pdf') return;
+    if (portfolioObjectUrl) URL.revokeObjectURL(portfolioObjectUrl);
+    portfolioObjectUrl = URL.createObjectURL(file);
+    profiles[currentRole].portfolioFile     = portfolioObjectUrl;
+    profiles[currentRole].portfolioFileName = file.name;
+    updatePortfolioUI(profiles[currentRole]);
+  }
+
+  function updatePortfolioUI(p) {
+    const empty = document.getElementById('portfolioEmpty');
+    const fileEl = document.getElementById('portfolioFile');
+    if (p.portfolioFile) {
+      empty.style.display  = 'none';
+      fileEl.style.display = '';
+      document.getElementById('portfolioFileName').textContent = p.portfolioFileName;
+    } else {
+      empty.style.display  = '';
+      fileEl.style.display = 'none';
+    }
+  }
+
+  function removePortfolio() {
+    if (portfolioObjectUrl) { URL.revokeObjectURL(portfolioObjectUrl); portfolioObjectUrl = null; }
+    profiles[currentRole].portfolioFile     = null;
+    profiles[currentRole].portfolioFileName = null;
+    document.getElementById('portfolioPdfInput').value = '';
+    updatePortfolioUI(profiles[currentRole]);
+  }
+
+  function viewPortfolioPdf() {
+    const url = profiles[currentRole].portfolioFile;
+    if (url) window.open(url, '_blank');
+  }
+
+  function togglePortfolioView() {
+    const url = profiles[currentRole].portfolioFile;
+    if (url) {
+      window.open(url, '_blank');
+    } else {
+      document.getElementById('portfolioPdfInput').click();
+    }
+  }
+
+  /* ══════════════════════════════════════════
+     DATABASE SYNC (Backend Only)
+     User profiles automatically sync to JSON
+     ══════════════════════════════════════════ */
+  function syncProfileToDatabase() {
+    const p = profiles[currentRole];
+    const profileData = {
+      role: currentRole,
+      lastUpdated: new Date().toISOString(),
+      profile: p
+    };
+
+    /* Production API call to backend:
+       fetch('/api/profiles/save', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify(profileData)
+       }).then(res => res.json())
+         .then(data => {
+           if (data.success) console.log('Profile synced to database');
+         });
+    */
+
+    // Demo: Log to console
+    console.log('✓ Profile synced to database:', profileData);
+  }
+
+  /* ══════════════════════════════════════════
+     SERVICES
+     ══════════════════════════════════════════ */
   let activeFilter = 'all';
 
   function filterServices(filter, btn) {
@@ -405,67 +910,32 @@
   function renderServices(filter) {
     const grid = document.getElementById('servicesGrid');
     const filtered = filter === 'all' ? services : services.filter(s => s.status === filter);
-
     if (filtered.length === 0) {
-      grid.innerHTML = `
-        <div class="services-empty" style="grid-column:1/-1;">
-          <div class="services-empty__icon">📭</div>
-          <div class="services-empty__text">No services found.</div>
-        </div>`;
+      grid.innerHTML = `<div class="services-empty" style="grid-column:1/-1;"><div class="services-empty__icon">📭</div><div class="services-empty__text">No services found.</div></div>`;
       return;
     }
-
     grid.innerHTML = filtered.map(s => {
-      const badgeColor = s.status === 'completed'
-        ? 'background:#dcfce7;color:#15803d;'
-        : 'background:#fef9c3;color:#92400e;';
-      return `
-        <div class="service-card">
-          <div class="service-card__img">${s.emoji}</div>
-          <div class="service-card__body">
-            <div class="service-card__title">${s.title}</div>
-            <div class="service-card__price">${s.price}</div>
-            <span class="service-card__status" style="${badgeColor}">
-              ${s.status.charAt(0).toUpperCase() + s.status.slice(1)}
-            </span>
-          </div>
-        </div>`;
+      const bc = s.status === 'completed' ? 'background:#dcfce7;color:#15803d;' : 'background:#fef9c3;color:#92400e;';
+      return `<div class="service-card"><div class="service-card__img">${s.emoji}</div><div class="service-card__body"><div class="service-card__title">${s.title}</div><div class="service-card__price">${s.price}</div><span class="service-card__status" style="${bc}">${s.status.charAt(0).toUpperCase()+s.status.slice(1)}</span></div></div>`;
     }).join('');
   }
 
-  /* ── Add service modal ───────────────────── */
-  function openAddService() {
-    document.getElementById('addServiceOverlay').classList.add('active');
-  }
-
-  function closeAddService() {
-    document.getElementById('addServiceOverlay').classList.remove('active');
-  }
+  function openAddService()  { document.getElementById('addServiceOverlay').classList.add('active'); }
+  function closeAddService() { document.getElementById('addServiceOverlay').classList.remove('active'); }
 
   function saveService() {
     const title = document.getElementById('svcTitle').value.trim();
     const price = document.getElementById('svcPrice').value.trim();
     if (!title || !price) return;
     const emojis = ['🎨','💻','📱','📊','✍️','🎬'];
-    services.push({
-      id: Date.now(),
-      title,
-      price,
-      cat: document.getElementById('svcCategory').value || 'Other',
-      emoji: emojis[Math.floor(Math.random() * emojis.length)],
-      status: 'uncompleted'
-    });
+    services.push({ id:Date.now(), title, price, cat:document.getElementById('svcCategory').value||'Other', emoji:emojis[Math.floor(Math.random()*emojis.length)], status:'uncompleted' });
     closeAddService();
-    document.getElementById('svcTitle').value = '';
-    document.getElementById('svcPrice').value = '';
+    ['svcTitle','svcPrice','svcDesc'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('svcCategory').value = '';
-    document.getElementById('svcDesc').value = '';
     renderServices(activeFilter);
   }
 
-  document.getElementById('addServiceOverlay').addEventListener('click', function(e) {
-    if (e.target === this) closeAddService();
-  });
+  document.getElementById('addServiceOverlay').addEventListener('click', function(e) { if(e.target===this) closeAddService(); });
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {

@@ -1,0 +1,242 @@
+/* =============================================
+   GIGHUB — Master Stylesheet (gighub.css)
+   Shared across all pages
+   ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+/* ── Reset ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #fff;
+  color: #1a2a3a;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+a { text-decoration: none; color: inherit; }
+img { display: block; }
+
+/* ── CSS Variables ─────────────────────────── */
+:root {
+  --nav-h:      180px;
+  --blue-dark:  #1b3d7a;
+  --blue-mid:   #1e5fa0;
+  --blue-teal:  #3185a8;
+  --cyan:       #00c8ef;
+  --orange:     #f5a623;
+  --white:      #ffffff;
+}
+
+/* ── NAVBAR ────────────────────────────────── */
+.navbar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: var(--white);
+  z-index: 10;
+}
+
+.navbar__join {
+  position: absolute;
+  top: 28px;
+  right: 40px;
+  background: var(--cyan);
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 999px;
+  padding: 11px 28px;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0,200,240,0.45);
+  transition: background 0.2s, transform 0.2s;
+}
+.navbar__join:hover {
+  background: #00afd4;
+  transform: translateY(-1px);
+}
+
+/* ── HERO SECTION ──────────────────────────── */
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.hero__white-band {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: #ffffff;
+  z-index: 1;
+}
+
+.hero__blue {
+  position: absolute;
+  top: var(--nav-h);
+  left: 0; right: 0; bottom: 0;
+  background: linear-gradient(
+    115deg,
+    #1b3d7a 0%,
+    #1e5fa0 30%,
+    #2a7ab5 60%,
+    #3d9fc4 100%
+  );
+  z-index: 1;
+}
+
+/* subtle radial light on right side matching screenshot */
+.hero__blue::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 55% 70% at 85% 35%,
+    rgba(80,160,200,0.35) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* ── BRAND (logo + name) ────────────────────── */
+.brand {
+  position: absolute;
+  top: calc(var(--nav-h) - 85px);
+  left: 36px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  z-index: 20;
+}
+
+.brand__logo {
+  width: 170px;
+  height: 170px;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: drop-shadow(0 6px 20px rgba(0,0,0,0.22));
+}
+
+.brand__name {
+  font-size: 3.6rem;
+  font-weight: 600;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  /* Matches screenshot: name text is a mid-grey/transparent on white, white-ish on blue */
+  color: rgba(200, 220, 235, 0.85);
+  user-select: none;
+}
+
+/* ── Reusable utility classes for future pages ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.btn-cyan {
+  background: var(--cyan);
+  color: #fff;
+  padding: 11px 28px;
+  font-size: 0.82rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 18px rgba(0,200,240,0.45);
+}
+.btn-cyan:hover { background: #00afd4; transform: translateY(-1px); }
+
+.btn-white {
+  background: #fff;
+  color: var(--blue-dark);
+  padding: 12px 32px;
+  font-size: 0.9rem;
+}
+.btn-white:hover { background: #eaf6ff; transform: translateY(-1px); }
+
+.btn-outline-white {
+  background: transparent;
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.55);
+  padding: 10px 28px;
+  font-size: 0.9rem;
+}
+.btn-outline-white:hover { background: rgba(255,255,255,0.15); }
+
+/* Card */
+.card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  padding: 28px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.14); }
+
+/* Section layout */
+.section { padding: 80px 40px; }
+.container { max-width: 1100px; margin: 0 auto; }
+
+/* Role toggle */
+.role-toggle {
+  display: inline-flex;
+  background: rgba(255,255,255,0.18);
+  border-radius: 999px;
+  padding: 4px;
+}
+.role-toggle__btn {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 22px;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.role-toggle__btn.active {
+  background: #fff;
+  color: var(--blue-dark);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* Footer */
+.footer {
+  background: var(--blue-dark);
+  color: rgba(255,255,255,0.65);
+  padding: 40px;
+  font-size: 0.82rem;
+}
+.footer__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer__brand { display: flex; align-items: center; gap: 10px; }
+.footer__logo { width: 32px; height: 32px; object-fit: contain; }
+.footer__name { font-weight: 700; font-size: 1.1rem; color: #fff; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  :root { --nav-h: 130px; }
+  .brand { left: 16px; top: calc(var(--nav-h) - 60px); gap: 12px; }
+  .brand__logo { width: 120px; height: 120px; }
+  .brand__name { font-size: 2.4rem; }
+  .navbar__join { right: 16px; top: 18px; }
+}

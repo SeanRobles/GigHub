@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GigHub</title>
+  <link rel="stylesheet" href="gighub.css" />
+</head>
+<body>
+
+  <div class="hero">
+    <!-- White top band -->
+    <div class="hero__white-band"></div>
+
+    <!-- Blue gradient body -->
+    <div class="hero__blue"></div>
+
+    <!-- Navbar (sits inside white band visually) -->
+    <nav class="navbar">
+      <button class="navbar__join" onclick="GigHub.openJoin()">JOIN NOW</button>
+    </nav>
+
+    <!-- Brand: logo + name straddling the white/blue divide -->
+    <div class="brand">
+      <img
+        src="../Images/GIGHUBLOGO ONLY.PNG"
+        alt="GigHub Logo"
+        class="brand__logo"
+        id="brandLogo"
+        onerror="GigHub.useFallbackLogo()"
+      />
+      <span class="brand__name">GigHub</span>
+    </div>
+  </div>
+
+  <script src="gighub.js"></script>
+</body>
+</html>

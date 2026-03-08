@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GigHub – Create Account</title>
+  <link rel="stylesheet" href="gighub.css" />
+</head>
+<body>
+
+  <!-- ════════════════════════════════════════════
+       MAIN PAGE
+       ════════════════════════════════════════════ -->
+  <div class="auth-page">
+
+    <!-- NAV -->
+    <nav class="auth-navbar">
+      <div class="auth-navbar__brand">
+        <img
+          src="../../Images/GIGHUBLOGO ONLY.PNG"
+          alt="GigHub"
+          class="auth-navbar__logo"
+          onerror="this.style.display='none';document.getElementById('nb-fb').style.display='flex';"
+        />
+        <div id="nb-fb" style="display:none;width:62px;height:62px;border-radius:50%;border:2px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.12);align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="40" height="40" viewBox="0 0 80 80" fill="none">
+            <circle cx="40" cy="40" r="38" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+            <ellipse cx="40" cy="46" rx="22" ry="13" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
+            <ellipse cx="40" cy="46" rx="10" ry="13" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+            <line x1="18" y1="46" x2="62" y2="46" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+            <polygon points="40,10 43.5,22 56,22 46,29 49.5,41 40,34 30.5,41 34,29 24,22 36.5,22" fill="#f5a623"/>
+          </svg>
+        </div>
+        <span class="auth-navbar__name">GigHub</span>
+      </div>
+      <div class="auth-navbar__links">
+        <a href="index.html" class="auth-navbar__home">Home</a>
+        <a href="login.html" class="auth-navbar__signin">Sign In</a>
+      </div>
+    </nav>
+
+    <!-- 3-col body -->
+    <div class="auth-body">
+
+      <!-- Left -->
+      <div class="auth-side auth-side--left">
+        <div class="auth-side__text">Be a<br>Freelancer<br>Today!</div>
+      </div>
+
+      <!-- Center card -->
+      <div class="auth-card" id="signupCard">
+        <h2 class="auth-card__title">Create Account</h2>
+        <p class="auth-card__subtitle">Join GigHub Today</p>
+
+        <form class="auth-form" id="signupForm" onsubmit="handleSignup(event)">
+
+          <div class="auth-field">
+            <label class="auth-field__label">First Name</label>
+            <input class="auth-field__input" type="text" placeholder="e.g Juan" id="firstName" required />
+          </div>
+
+          <div class="auth-field">
+            <label class="auth-field__label">Last Name</label>
+            <input class="auth-field__input" type="text" placeholder="e.g dela Cruz" id="lastName" required />
+          </div>
+
+          <div class="auth-field">
+            <label class="auth-field__label">Age</label>
+            <input class="auth-field__input" type="number" placeholder="e.g. 21" id="age" min="18" max="99" required />
+          </div>
+
+          <div class="auth-field">
+            <label class="auth-field__label">Email Address</label>
+            <input class="auth-field__input" type="email" placeholder="e.g. juandelacruz@gmail.com" id="email" required />
+          </div>
+
+          <div class="auth-field">
+            <label class="auth-field__label">Password</label>
+            <input class="auth-field__input" type="password" placeholder="Your password must be at least 11 characters" id="password" minlength="11" required />
+          </div>
+
+          <div class="auth-field">
+            <label class="auth-field__label">Phone Number</label>
+            <input class="auth-field__input" type="tel" placeholder="e.g. 09123456789" id="phone" required />
+          </div>
+
+          <div class="auth-submit-wrap">
+            <button type="submit" class="auth-submit">Sign Up</button>
+          </div>
+
+        </form>
+
+        <p class="auth-card__footer">
+          Already have an account?&nbsp;<a href="login.html">SIGN IN</a>
+        </p>
+      </div>
+
+      <!-- Right -->
+      <div class="auth-side auth-side--right">
+        <div class="auth-side__text">Find the<br>service<br>you need!</div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════
+       MODAL 1 — OTP Verification
+       ════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="otpOverlay">
+    <div class="modal-box">
+      <h3 class="modal-title">Account Verification</h3>
+      <p class="modal-subtitle">We sent a 6-digit code to your phone number</p>
+
+      <div class="otp-group" id="otpGroup">
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+        <input class="otp-input" type="text" maxlength="1" inputmode="numeric" />
+      </div>
+
+      <p class="modal-hint" id="otpHint">Enter the 6-digit code above to verify your account</p>
+      <button class="modal-confirm-btn" onclick="handleOTPConfirm()">Confirm</button>
+      <p class="modal-resend">Didn't receive a code? <a onclick="resendCode()">Resend</a></p>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════
+       MODAL 2 — Account Verified Success
+       ════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="successOverlay">
+    <div class="modal-box">
+      <div class="success-icon-wrap">
+        <div class="success-icon-ring">
+          <div class="success-icon-inner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <p class="success-title">Your Account is Verified and Ready!</p>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════
+       EMAIL TEMPLATE REFERENCE
+       Copy the buildEmailTemplate() output as your
+       transactional email HTML (SendGrid / Nodemailer)
+       ════════════════════════════════════════════ -->
+
+  <style>
+    @keyframes shake {
+      0%,100% { transform:translateX(0); }
+      20%      { transform:translateX(-8px); }
+      40%      { transform:translateX(8px); }
+      60%      { transform:translateX(-5px); }
+      80%      { transform:translateX(5px); }
+    }
+  </style>
+
+  <script>
+    /* ── Simulated server-side OTP (demo only) ── */
+    let serverOTP = '';
+
+    /* ── OTP input behaviour ─────────────────── */
+    const otpInputs = document.querySelectorAll('.otp-input');
+
+    otpInputs.forEach((inp, i) => {
+      inp.addEventListener('input', e => {
+        const val = e.target.value.replace(/\D/g, '');
+        e.target.value = val;
+        val ? e.target.classList.add('filled') : e.target.classList.remove('filled');
+        if (val && i < otpInputs.length - 1) otpInputs[i + 1].focus();
+      });
+
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && !inp.value && i > 0) {
+          otpInputs[i - 1].value = '';
+          otpInputs[i - 1].classList.remove('filled');
+          otpInputs[i - 1].focus();
+        }
+        if (!/^\d$/.test(e.key) && !['Backspace','Tab','ArrowLeft','ArrowRight'].includes(e.key)) {
+          e.preventDefault();
+        }
+      });
+
+      inp.addEventListener('paste', e => {
+        e.preventDefault();
+        const digits = (e.clipboardData || window.clipboardData)
+          .getData('text').replace(/\D/g, '').slice(0, 6);
+        digits.split('').forEach((ch, idx) => {
+          if (otpInputs[idx]) {
+            otpInputs[idx].value = ch;
+            otpInputs[idx].classList.add('filled');
+          }
+        });
+        otpInputs[Math.min(digits.length, 5)].focus();
+      });
+    });
+
+    /* ── Signup submit ───────────────────────── */
+    function handleSignup(e) {
+      e.preventDefault();
+      const name  = document.getElementById('firstName').value;
+      const email = document.getElementById('email').value;
+
+      // Generate demo OTP (replace with server-issued token in production)
+      serverOTP = String(Math.floor(100000 + Math.random() * 900000));
+
+      // Send verification email (logs to console in demo; wire to your API in prod)
+      triggerVerificationEmail(name, email, serverOTP);
+
+      // Open OTP modal
+      openModal('otpOverlay');
+      setTimeout(() => otpInputs[0].focus(), 300);
+    }
+
+    /* ── OTP confirm ─────────────────────────── */
+    function handleOTPConfirm() {
+      const entered = [...otpInputs].map(i => i.value).join('');
+
+      if (entered.length < 6) {
+        shakeOTP(); return;
+      }
+
+      // Demo: any 6-digit code passes. In production compare against serverOTP.
+      if (entered !== serverOTP && serverOTP !== '') {
+        shakeOTP();
+        document.getElementById('otpHint').textContent = 'Incorrect code. Please try again.';
+        document.getElementById('otpHint').style.color = '#ef4444';
+        return;
+      }
+
+      closeModal('otpOverlay');
+      setTimeout(() => {
+        openModal('successOverlay');
+        // Redirect to login after 2.5s
+        setTimeout(() => {
+          closeModal('successOverlay');
+          window.location.href = 'login.html';
+        }, 2500);
+      }, 200);
+    }
+
+    function shakeOTP() {
+      const g = document.getElementById('otpGroup');
+      g.style.animation = 'none';
+      requestAnimationFrame(() => { g.style.animation = 'shake 0.4s ease'; });
+    }
+
+    /* ── Resend code ─────────────────────────── */
+    function resendCode() {
+      serverOTP = String(Math.floor(100000 + Math.random() * 900000));
+      otpInputs.forEach(i => { i.value = ''; i.classList.remove('filled'); });
+      otpInputs[0].focus();
+      const hint = document.getElementById('otpHint');
+      hint.textContent = 'A new code has been sent!';
+      hint.style.color = '#22c55e';
+      setTimeout(() => {
+        hint.textContent = 'Enter the 6-digit code above to verify your account';
+        hint.style.color = '';
+      }, 3000);
+      console.log('New OTP (demo):', serverOTP);
+    }
+
+    /* ── Modal helpers ───────────────────────── */
+    function openModal(id)  { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    /* ════════════════════════════════════════════
+       EMAIL TEMPLATE
+       Trigger this from your backend (Node/PHP/etc.)
+       Paste the returned HTML as the email body.
+       ════════════════════════════════════════════ */
+    function triggerVerificationEmail(name, email, otp) {
+      const html = buildEmailTemplate(name, otp);
+
+      // ── Production integration ──────────────────
+      // Option A — Fetch your own API endpoint:
+      // fetch('/api/auth/send-otp-email', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ to: email, name, otp })
+      // });
+
+      // Option B — SendGrid example (server-side):
+      // const msg = {
+      //   to: email,
+      //   from: 'noreply@gighub.com',
+      //   subject: 'GigHub – Verify Your Account',
+      //   html: buildEmailTemplate(name, otp)
+      // };
+      // sgMail.send(msg);
+
+      // Demo output
+      console.log('═══ GigHub Verification Email ═══');
+      console.log('To:', email, '| OTP:', otp);
+      console.log('HTML:\n', html);
+    }
+
+    function buildEmailTemplate(name, otp) {
+      const digits = String(otp).split('').join('&nbsp;&nbsp;');
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Verify your GigHub account</title>
+<style>
+  body{margin:0;padding:0;background:#eef2f7;font-family:'Segoe UI',Arial,sans-serif;}
+  table{border-collapse:collapse;}
+  .wrap{max-width:560px;margin:36px auto;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.10);}
+  .hdr{background:linear-gradient(135deg,#1b3d7a 0%,#2a7ab5 100%);padding:36px 40px 28px;text-align:center;}
+  .hdr-title{color:#fff;font-size:1.9rem;font-weight:800;margin:0 0 4px;letter-spacing:-0.5px;}
+  .hdr-sub{color:rgba(255,255,255,0.72);font-size:0.84rem;margin:0;}
+  .body{padding:38px 44px 28px;}
+  .hi{font-size:1.05rem;font-weight:700;color:#1a2a3a;margin:0 0 12px;}
+  .txt{font-size:0.88rem;color:#4a5e70;line-height:1.72;margin:0 0 26px;}
+  .otp-wrap{background:#f0f8ff;border:2px dashed #00c8ef;border-radius:14px;padding:24px 20px;text-align:center;margin:0 0 28px;}
+  .otp-lbl{font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;color:#7a8fa0;margin-bottom:10px;}
+  .otp-num{font-size:3rem;font-weight:900;color:#1b3d7a;letter-spacing:0.18em;}
+  .otp-exp{font-size:0.72rem;color:#9aabb8;margin-top:8px;}
+  .cta{display:block;width:fit-content;margin:0 auto 28px;background:#00c8ef;color:#fff;font-weight:700;font-size:0.86rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;border-radius:999px;padding:14px 48px;box-shadow:0 4px 18px rgba(0,200,240,0.38);}
+  .div{border:none;border-top:1px solid #e8eff6;margin:0 0 22px;}
+  .note{font-size:0.74rem;color:#9aabb8;line-height:1.65;}
+  .ftr{background:#f5f8fb;padding:18px 44px;text-align:center;font-size:0.73rem;color:#9aabb8;}
+  .ftr a{color:#00c8ef;text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <div class="hdr-title">GigHub</div>
+    <div class="hdr-sub">The World&rsquo;s Freelance Marketplace</div>
+  </div>
+  <div class="body">
+    <p class="hi">Hi ${name}, welcome to GigHub! 👋</p>
+    <p class="txt">
+      Thanks for signing up! To complete your registration, please enter
+      the 6-digit verification code below on the sign-up page. The same
+      code was also sent to your registered phone number.
+    </p>
+    <div class="otp-wrap">
+      <div class="otp-lbl">Your one-time verification code</div>
+      <div class="otp-num">${digits}</div>
+      <div class="otp-exp">⏱ Expires in 10 minutes</div>
+    </div>
+    <a href="https://gighub.com/signup" class="cta">Verify My Account</a>
+    <hr class="div"/>
+    <p class="note">
+      If you didn&rsquo;t create a GigHub account, you can safely ignore this email.
+      Never share this code with anyone — GigHub will never ask for your code.
+    </p>
+  </div>
+  <div class="ftr">
+    &copy; 2026 GigHub &nbsp;&middot;&nbsp;
+    <a href="#">Privacy Policy</a> &nbsp;&middot;&nbsp;
+    <a href="#">Terms of Service</a>
+  </div>
+</div>
+</body>
+</html>`;
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8" />
+    <title>GigHub – Dashboard</title>
+<link rel="stylesheet" href="../css/common.css" />
+<link rel="stylesheet" href="../css/dashboard.css" />
+</head>
+<body>
+<div class="dash-shell" id="dashShell">
+
+    <aside class="dash-sidebar">
+        <div class="dash-sidebar__brand"><span class="dash-sidebar__name">GigHub</span></div>
+        <nav class="dash-nav">
+            <a href="dashboard.html" class="dash-nav__item active">Dashboard</a>
+            <a href="services.html" class="dash-nav__item">My Services</a>
+            <a href="profile.html" class="dash-nav__item">Profile</a>
+            <a href="messages.html" class="dash-nav__item">Messages</a>
+            <a href="settings.html" class="dash-nav__item">Settings</a>
+        </nav>
+    </aside>
+
+    <div class="dash-main">
+        <header class="dash-topbar">
+            <div class="dash-topbar__user"><span class="dash-topbar__username">Jane Doe</span></div>
+            <div class="dash-topbar__right">
+                <button class="dash-change-role" onclick="openRoleModal()">Change Role</button>
+            </div>
+        </header>
+
+        <div class="dash-content">
+            <div class="dash-welcome">
+                <h2 id="welcomeTitle">Welcome!</h2>
+                <p id="welcomeDesc">Grow your career.</p>
+            </div>
+
+            <div class="dash-stats-row">
+                <div class="dash-stat-card"><div class="dash-stat-card__num" id="statGigs">0</div><div class="dash-stat-card__lbl" id="statGigsLbl">Active Gigs</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="role-modal-overlay" id="roleModalOverlay">
+</div>
+
+<script src="../js/shared.js"></script>
+<script>
+    // Dashboard Specific Logic
+    document.addEventListener('GigHubDataLoaded', () => {
+    const isFL = currentRole === 'freelancer';
+    document.getElementById('welcomeTitle').textContent = isFL ? 'Welcome, Providers!' : 'Welcome, Seekers!';
+    document.getElementById('statGigs').textContent = isFL ? '8' : '5';
+    document.getElementById('statGigsLbl').textContent = isFL ? 'Active Gigs' : 'Posted Jobs';
+    // Update rest of your specific dashboard text here
+});
+</script>
+</body>
+</html>

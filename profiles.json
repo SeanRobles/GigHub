@@ -1,6 +1,10 @@
 {
   "_comment": "GigHub Database — User Profiles. This JSON file is the backend database that stores all user credentials and profile information. Users cannot manually edit this file; changes are made through the dashboard and automatically synced here.",
   "lastUpdated": "2026-03-08T12:00:00.000Z",
+  "admin": {
+    "email": "admin@gighub.com",
+    "password": "admin123"
+  },
   "freelancer": {
     "name": "Jane Doe",
     "title": "Software Engineer & UI/UX Designer",

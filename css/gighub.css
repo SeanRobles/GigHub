@@ -1438,9 +1438,9 @@ img { display: block; }
   display: flex;
   align-items: center;
   gap: 8px;
-  border: 2px solid var(--orange, #f5a623);
+  border: 2px solid #1b3d7a;
   background: transparent;
-  color: var(--orange, #f5a623);
+  color: #1b3d7a;
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
   font-size: 0.82rem;
@@ -1452,7 +1452,7 @@ img { display: block; }
   transition: background 0.2s, color 0.2s;
 }
 .services-add-btn:hover {
-  background: var(--orange, #f5a623);
+  background: #1b3d7a;
   color: #fff;
 }
 
@@ -1467,7 +1467,7 @@ img { display: block; }
 
 /* Services header bar */
 .services-header-bar {
-  background: linear-gradient(90deg, #f5a623 0%, #f0b84a 100%);
+  background: linear-gradient(90deg, #1b3d7a 0%, #2a4fa0 100%);
   border-radius: 10px;
   padding: 13px 22px;
   font-family: 'Poppins', sans-serif;
@@ -1502,17 +1502,17 @@ img { display: block; }
 }
 
 .services-tab.active {
-  background: #f5a623;
+  background: #1b3d7a;
   color: #fff;
-  border-color: #f5a623;
+  border-color: #1b3d7a;
 }
 .services-tab:not(.active) {
   background: transparent;
-  color: #f5a623;
-  border-color: #f5a623;
+  color: #1b3d7a;
+  border-color: #1b3d7a;
 }
 .services-tab:not(.active):hover {
-  background: #fff8ec;
+  background: #f0f4fb;
 }
 
 [data-role="client"] .services-tab.active {

@@ -1,14 +1,17 @@
 const express = require('express');
 const fs = require('fs');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Database file
-const PROFILES_FILE = '../data/profiles.json';
+// Database files
+const PROFILES_FILE = path.join(__dirname, '../data/profiles.json');
 const SERVICES_FILE = '../data/services.json';
+
+const MESSAGES_FILE = path.join(__dirname, '../data/messages.json');
 
 // --- Helper Functions ---
 function readDB(file, defaultData) {
@@ -63,6 +66,45 @@ app.post('/api/services', (req, res) => {
     writeDB(SERVICES_FILE, services);
     res.json({ success: true, service: newService });
 });
+
+// ==========================================
+// 3. MESSAGES API
+// ==========================================
+
+// ✅ Get all usernames (exclude admin/comment/lastUpdated)
+app.get('/api/usernames', (req, res) => {
+  const profiles = readDB(PROFILES_FILE, {});
+  const exclude = req.query.exclude || '';
+  const usernames = Object.keys(profiles).filter(u =>
+    !['_comment', 'lastUpdated', 'admin'].includes(u) && u !== exclude
+  );
+  res.json({ success: true, usernames });
+});
+
+// ✅ Get messages between two users
+app.get('/api/messages', (req, res) => {
+  const messages = readDB(MESSAGES_FILE, []);
+  const { user1, user2 } = req.query;
+  if (user1 && user2) {
+    const filtered = messages.filter(
+      m => (m.from === user1 && m.to === user2) || (m.from === user2 && m.to === user1)
+    );
+    return res.json({ success: true, messages: filtered });
+  }
+  res.json({ success: true, messages });
+});
+
+// ✅ Send a new message
+app.post('/api/messages', (req, res) => {
+  const { from, to, text } = req.body;
+  if (!from || !to || !text) return res.status(400).json({ success: false, message:'Missing data' });
+  const messages = readDB(MESSAGES_FILE, []);
+  messages.push({ from, to, text, timestamp: Date.now() });
+  writeDB(MESSAGES_FILE, messages);
+  res.json({ success: true });
+});
+
+
 
 const PORT = 3000;
 app.listen(PORT, () => {

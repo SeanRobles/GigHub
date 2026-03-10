@@ -462,19 +462,48 @@
         </div><!-- /.profile-page -->
       </div><!-- /#page-profile -->
 
-      <!-- MESSAGES PAGE (placeholder) -->
+            <!-- MESSAGES PAGE (chat demo) -->
       <div id="page-messages" style="display:none;">
-        <div class="dash-panel">
-          <div class="dash-panel__header"><span class="dash-panel__title">Messages</span></div>
-          <p style="color:#7a8fa0;font-size:.88rem;">No messages yet.</p>
-        </div>
+  <div class="dash-panel" style="max-width:720px;margin:auto;display:flex;gap:24px;">
+    <!-- Inbox List -->
+    <div style="width:220px;">
+      <div style="font-weight:700;color:#1b3d7a;margin-bottom:10px;">Inbox</div>
+      <div id="inboxList" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+    <!-- Chat Area -->
+    <div style="flex:1;">
+      <div class="dash-panel__header">
+        <span class="dash-panel__title">Messages</span>
+        <span id="chatWith" style="color:#7a8fa0;font-size:.9rem;margin-left:10px;">
+          with <b id="chatPartnerName"></b>
+        </span>
       </div>
+      <div id="chatBox" style="height:320px;overflow-y:auto;padding:12px 0 0 0;display:flex;flex-direction:column;gap:10px;background:#f8fafc;border-radius:8px 8px 0 0;">
+        <!-- Messages will appear here -->
+      </div>
+      <form id="chatForm" style="display:flex;gap:8px;padding:10px 0 0 0;" onsubmit="return sendMessage(event)">
+        <input id="chatInput" type="text" placeholder="Type a message…" autocomplete="off" style="flex:1;padding:10px 14px;border-radius:8px;border:1.5px solid #e0e8f0;font-size:.95rem;font-family:Poppins,sans-serif;" />
+        <button type="submit" style="background:#1b3d7a;color:#fff;border:none;border-radius:8px;padding:0 18px;font-weight:700;cursor:pointer;">Send</button>
+      </form>
+    </div>
+  </div>
+</div>
 
-      <!-- SETTINGS PAGE (placeholder) -->
+      <!-- SETTINGS PAGE (update email/password) -->
       <div id="page-settings" style="display:none;">
         <div class="dash-panel" style="max-width:600px;">
           <div class="dash-panel__header"><span class="dash-panel__title">Settings</span></div>
-          <p style="color:#7a8fa0;font-size:.88rem;">Settings coming soon.</p>
+          <form id="settingsForm" onsubmit="return saveSettings(event)" style="display:flex;flex-direction:column;gap:18px;margin-top:18px;">
+            <label>
+              <span style="font-size:.95rem;color:#1a2a3a;">Email Address</span>
+              <input id="settingsEmail" type="email" required style="width:100%;padding:10px 14px;border-radius:8px;border:1.5px solid #e0e8f0;font-size:.95rem;" />
+            </label>
+            <label>
+              <span style="font-size:.95rem;color:#1a2a3a;">New Password</span>
+              <input id="settingsPassword" type="password" minlength="6" placeholder="Leave blank to keep current" style="width:100%;padding:10px 14px;border-radius:8px;border:1.5px solid #e0e8f0;font-size:.95rem;" />
+            </label>
+            <button type="submit" style="background:#1b3d7a;color:#fff;border:none;border-radius:8px;padding:10px 0;font-weight:700;cursor:pointer;">Save Changes</button>
+          </form>
         </div>
       </div>
 
@@ -539,7 +568,7 @@
     password: 'admin123'
   };
 
-  let currentUser = null;
+  // let currentUser = null;
   let currentRole = 'freelancer';
   let pendingRole = 'freelancer';
   let isEditingProfile = false;
@@ -593,6 +622,16 @@
     document.getElementById('page-' + page).style.display = '';
     if (page === 'services') { renderServices('all'); updateServiceButtons(); }
     if (page === 'profile')  renderProfile();
+    if (page === 'messages') {
+      loadInbox();
+      document.getElementById('chatBox').innerHTML = '';
+      document.getElementById('chatPartnerName').textContent = '';
+      chatPartner = null;
+    }
+    if (page === 'settings') {
+      document.getElementById('settingsEmail').value = profiles[currentRole].email;
+      document.getElementById('settingsPassword').value = '';
+    }
   }
 
   /* ══════════════════════════════════════════
@@ -999,6 +1038,134 @@
       closeAddService();
     }
   });
+
+let currentUser = 'freelancer'; // logged-in username
+let chatPartner = '';          // current chat partner
+
+// Load inbox
+function loadInbox() {
+  fetch(`http://localhost:3000/api/usernames?exclude=${currentUser}`)
+    .then(res => res.json())
+    .then(data => {
+      const inboxList = document.getElementById('inboxList');
+      if (!data.usernames.length) {
+        inboxList.innerHTML = '<div style="color:#888;">No users found.</div>';
+        return;
+      }
+      inboxList.innerHTML = data.usernames.map(u =>
+        `<button onclick="openChat('${u}')" style="
+          text-align:left;
+          padding:8px 12px;
+          border-radius:8px;
+          border:none;
+          background:#f0f4f8;
+          cursor:pointer;
+          width:100%;
+        ">${u}</button>`
+      ).join('');
+    });
+}
+
+// Open chat with a user
+function openChat(username) {
+  chatPartner = username;
+  document.getElementById('chatPartnerName').textContent = username;
+  loadMessages();
+}
+
+// Load messages
+function loadMessages() {
+  if (!chatPartner) return;
+  fetch(`http://localhost:3000/api/messages?user1=${currentUser}&user2=${chatPartner}`)
+    .then(res => res.json())
+    .then(data => {
+      const msgs = data.messages || [];
+      const box = document.getElementById('chatBox');
+      box.innerHTML = msgs.map(m => {
+        const isMe = m.from === currentUser;
+        return `<div style="
+          display:flex;
+          justify-content:${isMe ? 'flex-end' : 'flex-start'};
+        ">
+          <div style="
+            max-width:70%;
+            padding:8px 14px;
+            border-radius:16px;
+            background:${isMe ? '#1b3d7a' : '#e0e8f0'};
+            color:${isMe ? '#fff' : '#1a2a3a'};
+            font-size:.95rem;
+            font-family:Poppins,sans-serif;
+          ">
+            ${m.text}
+          </div>
+        </div>`;
+      }).join('');
+      box.scrollTop = box.scrollHeight; // scroll to bottom
+    });
+}
+
+// Send message
+function sendMessage(e) {
+  e.preventDefault();
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text || !chatPartner) return false;
+
+  fetch('http://localhost:3000/api/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: currentUser, to: chatPartner, text })
+  }).then(() => {
+    input.value = '';
+    loadMessages();
+  });
+  return false;
+}
+
+// Load inbox on page load
+window.addEventListener('load', () => {
+  loadInbox();
+});
+
+    function saveSettings(e) {
+    e.preventDefault();
+    const email = document.getElementById('settingsEmail').value.trim();
+    const password = document.getElementById('settingsPassword').value.trim();
+    if (!email) {
+      alert('Email is required.');
+      return false;
+    }
+    profiles[currentRole].email = email;
+    if (password) profiles[currentRole].password = password;
+    alert('Settings updated!');
+    document.getElementById('settingsPassword').value = '';
+    return false;
+  }
+
+  // SERVICE DETAILS MODAL LOGIC
+  function openServiceDetails(serviceId) {
+    const svc = services.find(s => s.id === serviceId);
+    if (!svc) return;
+    document.getElementById('svcModalTitle').textContent = `${svc.emoji || ''} ${svc.title}`;
+    document.getElementById('svcModalBody').innerHTML = `
+      <div><b>Category:</b> ${svc.cat}</div>
+      <div><b>Price:</b> ${svc.price}</div>
+      <div><b>Status:</b> ${svc.status.charAt(0).toUpperCase() + svc.status.slice(1)}</div>
+      <div><b>Posted by:</b> ${svc.createdBy.charAt(0).toUpperCase() + svc.createdBy.slice(1)}</div>
+      ${svc.desc ? `<div style="margin-top:10px;"><b>Description:</b><br>${svc.desc}</div>` : ''}
+    `;
+    document.getElementById('serviceDetailsOverlay').style.display = '';
+  }
+  function closeServiceDetails() {
+    document.getElementById('serviceDetailsOverlay').style.display = 'none';
+  }
+  // Optional: close modal when clicking outside
+  document.getElementById('serviceDetailsOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeServiceDetails();
+  });
+
+  // ...existing code...
+  
 </script>
 
 </body>

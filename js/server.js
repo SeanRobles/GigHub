@@ -6,7 +6,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Database files
+// Database file
 const PROFILES_FILE = '../data/profiles.json';
 const SERVICES_FILE = '../data/services.json';
 

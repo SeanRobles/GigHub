@@ -14,7 +14,7 @@
     <nav class="login-navbar">
       <span class="login-navbar__name">GigHub</span>
       <div class="login-navbar__links">
-        <a href="index.html" class="login-navbar__home">Home</a>
+        <a href="LandingPage.html" class="login-navbar__home">Home</a>
         <a href="signup.html" class="login-navbar__signup">Sign Up</a>
       </div>
     </nav>
@@ -55,7 +55,7 @@
           <input
             class="login-input"
             type="text"
-            placeholder="Username"
+            placeholder="Username or Email"
             id="username"
             autocomplete="username"
           />
@@ -83,14 +83,13 @@
   </div><!-- /.login-page -->
 
   <script>
+
     function handleLogin() {
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
       const errorEl  = document.getElementById('loginError');
       const fields   = document.getElementById('loginFields');
-
       errorEl.classList.remove('visible');
-
       if (!username || !password) {
         errorEl.textContent = 'Please enter your username and password.';
         errorEl.classList.add('visible');
@@ -99,28 +98,35 @@
         return;
       }
 
-      // ── Production: POST to your auth API ──────────────
-      // fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ username, password })
-      // })
-      // .then(r => r.json())
-      // .then(data => {
-      //   if (data.success) window.location.href = 'dashboard.html';
-      //   else showError(data.message);
-      // });
-
-      // Demo: simulate successful login
       const btn = document.querySelector('.login-btn');
       btn.textContent = 'Signing in…';
       btn.style.opacity = '0.75';
       btn.style.pointerEvents = 'none';
 
-      setTimeout(() => {
-        // Redirect to dashboard (replace with your actual dashboard page)
-        window.location.href = 'dashboard.html';
-      }, 1200);
+      fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier: username, password })
+      })
+      .then(async res => {
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.message || 'Login failed.');
+        }
+        localStorage.setItem('gighub_user', data.user.username);
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 400);
+      })
+      .catch(err => {
+        errorEl.textContent = err.message;
+        errorEl.classList.add('visible');
+        fields.style.animation = 'none';
+        requestAnimationFrame(() => { fields.style.animation = 'loginShake 0.4s ease'; });
+        btn.textContent = 'Sign In';
+        btn.style.opacity = '1';
+        btn.style.pointerEvents = 'auto';
+      });
     }
 
     // Allow Enter key to submit

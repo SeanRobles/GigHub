@@ -1,112 +1,592 @@
+require('dotenv').config();
+
 const express = require('express');
 const fs = require('fs');
-const cors = require('cors');
 const path = require('path');
+const cors = require('cors');
+const crypto = require('crypto');
+const fetch = require('node-fetch');
 
 const app = express();
+const ROOT_DIR = path.join(__dirname, '..');
+const DATA_DIR = path.join(ROOT_DIR, 'data');
+const HTML_DIR = path.join(ROOT_DIR, 'html');
+const CSS_DIR = path.join(ROOT_DIR, 'css');
+const IMAGES_DIR = path.join(ROOT_DIR, 'Images');
+
+const PROFILES_FILE = path.join(DATA_DIR, 'profiles.json');
+const SERVICES_FILE = path.join(DATA_DIR, 'services.json');
+const MESSAGES_FILE = path.join(DATA_DIR, 'messages.json');
+
+const EMAILJS_SERVICE_ID = process.env.EMAILJS_SERVICE_ID || 'service_1l0xsny';
+const EMAILJS_PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY || process.env.EMAILJS_USER_ID || '';
+const EMAILJS_PRIVATE_KEY = process.env.EMAILJS_PRIVATE_KEY || process.env.EMAILJS_ACCESS_TOKEN || '';
+const EMAILJS_VERIFY_TEMPLATE_ID = process.env.EMAILJS_VERIFY_TEMPLATE_ID || '';
+const EMAILJS_RESET_TEMPLATE_ID = process.env.EMAILJS_RESET_TEMPLATE_ID || '';
+
+const pendingSignups = new Map();
+const passwordResetOtps = new Map();
+
 app.use(cors());
 app.use(express.json());
+app.use(express.static(HTML_DIR));
+app.use('/html', express.static(HTML_DIR));
+app.use('/css', express.static(CSS_DIR));
+app.use('/Images', express.static(IMAGES_DIR));
 
-// Database files
-const PROFILES_FILE = path.join(__dirname, '../data/profiles.json');
-const SERVICES_FILE = '../data/services.json';
+app.get('/', (req, res) => {
+  res.sendFile(path.join(HTML_DIR, 'LandingPage.html'));
+});
 
-const MESSAGES_FILE = path.join(__dirname, '../data/messages.json');
-
-// --- Helper Functions ---
-function readDB(file, defaultData) {
-    if (!fs.existsSync(file)) return defaultData;
-    return JSON.parse(fs.readFileSync(file, 'utf8'));
-}
-function writeDB(file, data) {
-    fs.writeFileSync(file, JSON.stringify(data, null, 2));
+function isoNow() {
+  return new Date().toISOString();
 }
 
-// ==========================================
-// 1. PROFILES API
-// ==========================================
-// GET: Load profiles on startup
-app.get('/api/profiles', (req, res) => {
-    const profiles = readDB(PROFILES_FILE, { freelancer: {}, client: {} });
-    res.json({ success: true, profiles });
-});
+function ensureDir(dirPath) {
+  if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, { recursive: true });
+}
 
-// POST: Save profile edits
-app.post('/api/profiles/save', (req, res) => {
-    const { role, lastUpdated, profile } = req.body;
-    if (!role || !profile) return res.status(400).json({ success: false, message: 'Missing data' });
+function defaultRoleProfile(displayName) {
+  return {
+    name: displayName,
+    title: '',
+    bio: '',
+    languages: '',
+    location: '',
+    skill: '',
+    tools: '',
+    level: '',
+    years: '',
+    hourly: '',
+    fixedMin: '',
+    fixedMax: '',
+    payment: '',
+    degree: '',
+    institution: '',
+    gradYear: '',
+    certs: '',
+    portfolioFile: null,
+    portfolioFileName: null,
+    avatarSrc: null
+  };
+}
 
-    const db = readDB(PROFILES_FILE, { freelancer: {}, client: {} });
-    db[role] = profile;
-    db.lastUpdated = lastUpdated;
+function defaultProfilesDb() {
+  return { users: {}, lastUpdated: isoNow() };
+}
 
-    writeDB(PROFILES_FILE, db);
-    res.json({ success: true, message: 'Profile saved' });
-});
+function readJson(filePath, fallbackValue) {
+  try {
+    if (!fs.existsSync(filePath)) return fallbackValue;
+    const raw = fs.readFileSync(filePath, 'utf8').trim();
+    return raw ? JSON.parse(raw) : fallbackValue;
+  } catch (error) {
+    console.error(`Failed to read ${filePath}:`, error);
+    return fallbackValue;
+  }
+}
 
-// ==========================================
-// 2. SERVICES API
-// ==========================================
-// GET: Load all services on startup
-app.get('/api/services', (req, res) => {
-    const services = readDB(SERVICES_FILE, []);
-    res.json({ success: true, services });
-});
+function writeJson(filePath, data) {
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+}
 
-// POST: Add a new service (Post Job)
-app.post('/api/services', (req, res) => {
-    const newService = req.body;
-    if (!newService.title || !newService.price) {
-        return res.status(400).json({ success: false, message: 'Title and price required' });
+function normalizeProfilesDb(rawDb) {
+  if (rawDb && rawDb.users && typeof rawDb.users === 'object') {
+    return rawDb;
+  }
+
+  const db = defaultProfilesDb();
+  if (!rawDb || typeof rawDb !== 'object') return db;
+
+  Object.entries(rawDb).forEach(([key, value]) => {
+    if (['_comment', 'lastUpdated', 'admin'].includes(key) || !value || typeof value !== 'object') {
+      return;
     }
 
-    const services = readDB(SERVICES_FILE, []);
-    services.push(newService);
+    const role = key === 'client' ? 'client' : 'freelancer';
+    const displayName = value.name || key;
 
-    writeDB(SERVICES_FILE, services);
-    res.json({ success: true, service: newService });
+    db.users[key] = {
+      username: key,
+      email: value.email || '',
+      password: value.password || '',
+      currentRole: role,
+      roles: {
+        freelancer: role === 'freelancer' ? { ...defaultRoleProfile(displayName), ...value } : defaultRoleProfile(displayName),
+        client: role === 'client' ? { ...defaultRoleProfile(displayName), ...value } : defaultRoleProfile(displayName)
+      },
+      acceptedServices: Array.isArray(value.acceptedServices) ? value.acceptedServices : [],
+      createdServices: Array.isArray(value.createdServices) ? value.createdServices : [],
+      verified: true,
+      createdAt: isoNow(),
+      updatedAt: isoNow()
+    };
+  });
+
+  return db;
+}
+
+function loadProfilesDb() {
+  return normalizeProfilesDb(readJson(PROFILES_FILE, defaultProfilesDb()));
+}
+
+function saveProfilesDb(db) {
+  db.lastUpdated = isoNow();
+  writeJson(PROFILES_FILE, db);
+}
+
+function loadServices() {
+  return readJson(SERVICES_FILE, []);
+}
+
+function saveServices(services) {
+  writeJson(SERVICES_FILE, services);
+}
+
+function loadMessages() {
+  return readJson(MESSAGES_FILE, []);
+}
+
+function saveMessages(messages) {
+  writeJson(MESSAGES_FILE, messages);
+}
+
+function ensureDataFiles() {
+  ensureDir(DATA_DIR);
+  if (!fs.existsSync(PROFILES_FILE)) writeJson(PROFILES_FILE, defaultProfilesDb());
+  if (!fs.existsSync(SERVICES_FILE)) writeJson(SERVICES_FILE, []);
+  if (!fs.existsSync(MESSAGES_FILE)) writeJson(MESSAGES_FILE, []);
+}
+
+function sanitizeUser(account) {
+  if (!account) return null;
+  const { password, ...safeUser } = account;
+  return safeUser;
+}
+
+function findUser(db, identifier) {
+  if (!identifier) return null;
+  const lowered = identifier.trim().toLowerCase();
+  return Object.values(db.users).find(user =>
+    user.username.toLowerCase() === lowered || user.email.toLowerCase() === lowered
+  ) || null;
+}
+
+function requireEmailJsConfig(templateId) {
+  return EMAILJS_PUBLIC_KEY && EMAILJS_PRIVATE_KEY && EMAILJS_SERVICE_ID && templateId;
+}
+
+async function sendEmailViaEmailJs(templateId, templateParams) {
+  if (!requireEmailJsConfig(templateId)) {
+    throw new Error('EmailJS is not fully configured. Set EMAILJS_PUBLIC_KEY, EMAILJS_PRIVATE_KEY, and template IDs in your environment.');
+  }
+
+  const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      service_id: EMAILJS_SERVICE_ID,
+      template_id: templateId,
+      user_id: EMAILJS_PUBLIC_KEY,
+      accessToken: EMAILJS_PRIVATE_KEY,
+      template_params: templateParams
+    })
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`EmailJS request failed: ${text}`);
+  }
+}
+
+async function sendVerificationEmail({ username, firstName, email, otp }) {
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+  await sendEmailViaEmailJs(EMAILJS_VERIFY_TEMPLATE_ID, {
+    to_name: firstName || username,
+    to_email: email,
+    email,
+    recipient: email,
+    username,
+    otp_code: otp,
+    passcode: otp,
+    time: expiresAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    company_name: 'GigHub'
+  });
+}
+
+async function sendResetPasswordEmail({ email, otp }) {
+  const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+  await sendEmailViaEmailJs(EMAILJS_RESET_TEMPLATE_ID, {
+    to_email: email,
+    email,
+    recipient: email,
+    otp_code: otp,
+    passcode: otp,
+    time: expiresAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    company_name: 'GigHub'
+  });
+}
+
+ensureDataFiles();
+
+app.get('/api/health', (req, res) => {
+  res.json({ success: true, message: 'GigHub backend is running' });
 });
 
-// ==========================================
-// 3. MESSAGES API
-// ==========================================
+app.post('/api/auth/signup/request-verification', async (req, res) => {
+  const { username, firstName, lastName, age, email, password } = req.body;
+  if (!username || !firstName || !lastName || !age || !email || !password) {
+    return res.status(400).json({ success: false, message: 'All signup fields are required.' });
+  }
 
-// ✅ Get all usernames (exclude admin/comment/lastUpdated)
+  const db = loadProfilesDb();
+  const existingUser = findUser(db, username) || Object.values(db.users).find(user => user.email.toLowerCase() === email.toLowerCase());
+  if (existingUser) {
+    return res.status(409).json({ success: false, message: 'That username or email is already registered.' });
+  }
+
+  if (pendingSignups.has(username.toLowerCase())) {
+    pendingSignups.delete(username.toLowerCase());
+  }
+
+  const otp = String(Math.floor(100000 + Math.random() * 900000));
+  pendingSignups.set(username.toLowerCase(), {
+    username,
+    firstName,
+    lastName,
+    age,
+    email,
+    password,
+    otp,
+    expiresAt: Date.now() + 15 * 60 * 1000
+  });
+
+  try {
+    await sendVerificationEmail({ username, firstName, email, otp });
+    res.json({ success: true, message: 'Verification code sent to your email.' });
+  } catch (error) {
+    pendingSignups.delete(username.toLowerCase());
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+app.post('/api/auth/signup/verify', (req, res) => {
+  const { username, otp } = req.body;
+  const pending = pendingSignups.get((username || '').toLowerCase());
+
+  if (!pending) {
+    return res.status(404).json({ success: false, message: 'No pending signup found for that username.' });
+  }
+  if (Date.now() > pending.expiresAt) {
+    pendingSignups.delete(username.toLowerCase());
+    return res.status(410).json({ success: false, message: 'Your verification code expired. Please sign up again.' });
+  }
+  if (pending.otp !== otp) {
+    return res.status(400).json({ success: false, message: 'Incorrect verification code.' });
+  }
+
+  const db = loadProfilesDb();
+  const displayName = `${pending.firstName} ${pending.lastName}`.trim();
+  db.users[pending.username] = {
+    username: pending.username,
+    email: pending.email,
+    password: pending.password,
+    verified: true,
+    age: pending.age,
+    currentRole: 'freelancer',
+    roles: {
+      freelancer: defaultRoleProfile(displayName),
+      client: defaultRoleProfile(displayName)
+    },
+    acceptedServices: [],
+    createdServices: [],
+    createdAt: isoNow(),
+    updatedAt: isoNow()
+  };
+  saveProfilesDb(db);
+  pendingSignups.delete(username.toLowerCase());
+
+  res.json({
+    success: true,
+    user: {
+      username: pending.username,
+      email: pending.email,
+      currentRole: 'freelancer'
+    }
+  });
+});
+
+app.post('/api/auth/login', (req, res) => {
+  const { identifier, password } = req.body;
+  if (!identifier || !password) {
+    return res.status(400).json({ success: false, message: 'Identifier and password are required.' });
+  }
+
+  const db = loadProfilesDb();
+  const user = findUser(db, identifier);
+
+  if (!user || user.password !== password) {
+    return res.status(401).json({ success: false, message: 'Incorrect username, email, or password.' });
+  }
+
+  res.json({ success: true, user: sanitizeUser(user) });
+});
+
+app.post('/api/auth/forgot-password', async (req, res) => {
+  const { identifier } = req.body;
+  if (!identifier) {
+    return res.status(400).json({ success: false, message: 'Email or username is required.' });
+  }
+
+  const db = loadProfilesDb();
+  const user = findUser(db, identifier);
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'No account found for that email or username.' });
+  }
+
+  const otp = String(Math.floor(100000 + Math.random() * 900000));
+  passwordResetOtps.set(user.username.toLowerCase(), {
+    username: user.username,
+    otp,
+    expiresAt: Date.now() + 15 * 60 * 1000
+  });
+
+  try {
+    await sendResetPasswordEmail({ email: user.email, otp });
+    res.json({ success: true, message: 'Password reset OTP sent to your email.' });
+  } catch (error) {
+    passwordResetOtps.delete(user.username.toLowerCase());
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+app.post('/api/auth/reset-password', (req, res) => {
+  const { identifier, otp, password } = req.body;
+  if (!identifier || !otp || !password) {
+    return res.status(400).json({ success: false, message: 'Identifier, OTP, and new password are required.' });
+  }
+
+  const db = loadProfilesDb();
+  const user = findUser(db, identifier);
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'Account not found.' });
+  }
+
+  const pending = passwordResetOtps.get(user.username.toLowerCase());
+  if (!pending) {
+    return res.status(400).json({ success: false, message: 'No active reset request found. Request a new OTP.' });
+  }
+
+  if (Date.now() > pending.expiresAt) {
+    passwordResetOtps.delete(user.username.toLowerCase());
+    return res.status(410).json({ success: false, message: 'Password reset OTP expired.' });
+  }
+
+  if (pending.otp !== String(otp).trim()) {
+    return res.status(400).json({ success: false, message: 'Invalid OTP code.' });
+  }
+
+  user.password = password;
+  user.updatedAt = isoNow();
+  saveProfilesDb(db);
+  passwordResetOtps.delete(user.username.toLowerCase());
+
+  res.json({ success: true, message: 'Password updated successfully.' });
+});
+
 app.get('/api/usernames', (req, res) => {
-  const profiles = readDB(PROFILES_FILE, {});
-  const exclude = req.query.exclude || '';
-  const usernames = Object.keys(profiles).filter(u =>
-    !['_comment', 'lastUpdated', 'admin'].includes(u) && u !== exclude
-  );
+  const db = loadProfilesDb();
+  const exclude = (req.query.exclude || '').toLowerCase();
+  const usernames = Object.values(db.users)
+    .map(user => user.username)
+    .filter(username => username.toLowerCase() !== exclude);
   res.json({ success: true, usernames });
 });
 
-// ✅ Get messages between two users
-app.get('/api/messages', (req, res) => {
-  const messages = readDB(MESSAGES_FILE, []);
-  const { user1, user2 } = req.query;
-  if (user1 && user2) {
-    const filtered = messages.filter(
-      m => (m.from === user1 && m.to === user2) || (m.from === user2 && m.to === user1)
-    );
-    return res.json({ success: true, messages: filtered });
+app.get('/api/users/:username', (req, res) => {
+  const db = loadProfilesDb();
+  const user = db.users[req.params.username];
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'User not found.' });
   }
-  res.json({ success: true, messages });
+  res.json({ success: true, user: sanitizeUser(user) });
 });
 
-// ✅ Send a new message
+app.patch('/api/users/:username/settings', (req, res) => {
+  const { email, password, currentRole } = req.body;
+  const db = loadProfilesDb();
+  const user = db.users[req.params.username];
+
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'User not found.' });
+  }
+
+  if (email) {
+    const duplicate = Object.values(db.users).find(account => account.username !== user.username && account.email.toLowerCase() === email.toLowerCase());
+    if (duplicate) {
+      return res.status(409).json({ success: false, message: 'That email is already in use.' });
+    }
+    user.email = email;
+  }
+
+  if (password) user.password = password;
+  if (currentRole && ['freelancer', 'client'].includes(currentRole)) user.currentRole = currentRole;
+
+  user.updatedAt = isoNow();
+  saveProfilesDb(db);
+  res.json({ success: true, user: sanitizeUser(user) });
+});
+
+app.get('/api/profiles', (req, res) => {
+  const db = loadProfilesDb();
+  res.json({ success: true, users: Object.values(db.users).map(sanitizeUser), lastUpdated: db.lastUpdated });
+});
+
+app.post('/api/profiles/save', (req, res) => {
+  const { username, role, profile } = req.body;
+  if (!username || !role || !profile) {
+    return res.status(400).json({ success: false, message: 'Username, role, and profile are required.' });
+  }
+
+  const db = loadProfilesDb();
+  const user = db.users[username];
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'User not found.' });
+  }
+
+  user.roles[role] = { ...defaultRoleProfile(profile.name || user.username), ...profile };
+  user.updatedAt = isoNow();
+  saveProfilesDb(db);
+  res.json({ success: true, message: 'Profile saved.', user: sanitizeUser(user) });
+});
+
+app.get('/api/services', (req, res) => {
+  const services = loadServices();
+  res.json({ success: true, services });
+});
+
+app.post('/api/services', (req, res) => {
+  const { username, role, title, price, cat, desc, emoji } = req.body;
+  if (!username || !title || !price) {
+    return res.status(400).json({ success: false, message: 'Username, title, and price are required.' });
+  }
+
+  const db = loadProfilesDb();
+  const user = db.users[username];
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'User not found.' });
+  }
+
+  const services = loadServices();
+  const service = {
+    id: Date.now(),
+    title,
+    price,
+    cat: cat || 'Other',
+    desc: desc || '',
+    emoji: emoji || '💼',
+    status: 'uncompleted',
+    createdBy: username,
+    createdByRole: role || user.currentRole || 'client',
+    acceptedBy: null,
+    acceptedByRole: null,
+    createdAt: isoNow(),
+    updatedAt: isoNow()
+  };
+
+  services.push(service);
+  saveServices(services);
+
+  user.createdServices = Array.isArray(user.createdServices) ? user.createdServices : [];
+  user.createdServices.push(service.id);
+  user.updatedAt = isoNow();
+  saveProfilesDb(db);
+
+  res.json({ success: true, service });
+});
+
+app.post('/api/services/:id/accept', (req, res) => {
+  const { username, role } = req.body;
+  if (!username) {
+    return res.status(400).json({ success: false, message: 'Username is required.' });
+  }
+
+  const db = loadProfilesDb();
+  const user = db.users[username];
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'User not found.' });
+  }
+
+  const services = loadServices();
+  const service = services.find(item => String(item.id) === String(req.params.id));
+  if (!service) {
+    return res.status(404).json({ success: false, message: 'Service not found.' });
+  }
+  if (service.createdBy === username) {
+    return res.status(400).json({ success: false, message: 'You cannot accept your own service.' });
+  }
+  if (service.acceptedBy) {
+    return res.status(409).json({ success: false, message: 'That service has already been accepted.' });
+  }
+
+  service.acceptedBy = username;
+  service.acceptedByRole = role || user.currentRole || 'freelancer';
+  service.updatedAt = isoNow();
+  saveServices(services);
+
+  user.acceptedServices = Array.isArray(user.acceptedServices) ? user.acceptedServices : [];
+  if (!user.acceptedServices.includes(service.id)) {
+    user.acceptedServices.push(service.id);
+  }
+  user.updatedAt = isoNow();
+  saveProfilesDb(db);
+
+  res.json({ success: true, service });
+});
+
+app.get('/api/messages', (req, res) => {
+  const messages = loadMessages();
+  const { user1, user2 } = req.query;
+  if (!user1 || !user2) {
+    return res.json({ success: true, messages });
+  }
+
+  const filtered = messages.filter(message =>
+    (message.from === user1 && message.to === user2) ||
+    (message.from === user2 && message.to === user1)
+  );
+
+  res.json({ success: true, messages: filtered });
+});
+
 app.post('/api/messages', (req, res) => {
   const { from, to, text } = req.body;
-  if (!from || !to || !text) return res.status(400).json({ success: false, message:'Missing data' });
-  const messages = readDB(MESSAGES_FILE, []);
-  messages.push({ from, to, text, timestamp: Date.now() });
-  writeDB(MESSAGES_FILE, messages);
-  res.json({ success: true });
+  if (!from || !to || !text) {
+    return res.status(400).json({ success: false, message: 'From, to, and text are required.' });
+  }
+  if (from === to) {
+    return res.status(400).json({ success: false, message: 'You cannot message yourself.' });
+  }
+
+  const db = loadProfilesDb();
+  if (!db.users[from] || !db.users[to]) {
+    return res.status(404).json({ success: false, message: 'Sender or recipient not found.' });
+  }
+
+  const messages = loadMessages();
+  const message = {
+    id: Date.now(),
+    from,
+    to,
+    text,
+    timestamp: Date.now()
+  };
+  messages.push(message);
+  saveMessages(messages);
+  res.json({ success: true, message });
 });
 
-
-
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`GigHub backend running on http://localhost:${PORT}`);
+  console.log(`GigHub backend running on http://localhost:${PORT}`);
 });

@@ -115,131 +115,50 @@ if (!localStorage.getItem('gighub_user')) {
             <h2 id="welcomeTitle">Welcome, Providers!</h2>
             <p id="welcomeDesc">Connect with clients who value your expertise and grow your freelancing career with confidence.</p>
           </div>
-          <div class="dash-welcome__stats">
-            <div class="dash-wstat"><div class="dash-wstat__num">10,000+</div><div class="dash-wstat__lbl">Services</div></div>
-            <div class="dash-wstat"><div class="dash-wstat__num">1,200</div><div class="dash-wstat__lbl">Sellers</div></div>
-            <div class="dash-wstat"><div class="dash-wstat__num">98%</div><div class="dash-wstat__lbl">Satisfaction</div></div>
-          </div>
         </div>
 
-        <!-- Stat cards -->
-        <div class="dash-stats-row">
-          <div class="dash-stat-card">
-            <div class="dash-stat-card__icon" style="background:#eef6ff;">💼</div>
-            <div class="dash-stat-card__num" id="statGigs">8</div>
-            <div class="dash-stat-card__lbl" id="statGigsLbl">Active Gigs</div>
-            <div class="dash-stat-card__change up">↑ 2 this month</div>
-          </div>
-          <div class="dash-stat-card">
-            <div class="dash-stat-card__icon" style="background:#f0fdf4;">📦</div>
-            <div class="dash-stat-card__num" id="statOrders">14</div>
-            <div class="dash-stat-card__lbl" id="statOrdersLbl">Active Orders</div>
-            <div class="dash-stat-card__change up">↑ 5 this week</div>
-          </div>
-          <div class="dash-stat-card">
-            <div class="dash-stat-card__icon" style="background:#fffbeb;">⭐</div>
-            <div class="dash-stat-card__num">4.9</div>
-            <div class="dash-stat-card__lbl">Avg Rating</div>
-            <div class="dash-stat-card__change up">↑ 0.1 vs last month</div>
-          </div>
-          <div class="dash-stat-card">
-            <div class="dash-stat-card__icon" style="background:#fdf4ff;">💰</div>
-            <div class="dash-stat-card__num" id="statMoney">₱12,400</div>
-            <div class="dash-stat-card__lbl" id="statMoneyLbl">Earnings</div>
-            <div class="dash-stat-card__change up">↑ ₱2,100 this month</div>
-          </div>
+        <!-- Stat cards (populated dynamically) -->
+        <div class="dash-stats-row" id="statsRow" style="display:none;">
+          <!-- Will be populated by JavaScript based on role -->
         </div>
 
-        <!-- Lower panels -->
-        <div class="dash-lower">
-          <div class="dash-panel">
-            <div class="dash-panel__header">
-              <span class="dash-panel__title" id="ordersTitle">Recent Orders</span>
-              <a class="dash-panel__link">View all →</a>
-            </div>
-            <table class="dash-table">
-              <thead><tr><th>Client / Gig</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
-              <tbody>
-                <tr>
-                  <td><strong>Logo Design</strong><br><span style="color:#8a9baa;font-size:.74rem;">Mark Santos</span></td>
-                  <td style="color:#8a9baa;">Mar 6</td><td>₱1,200</td>
-                  <td><span class="dash-badge dash-badge--green">Completed</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Website Redesign</strong><br><span style="color:#8a9baa;font-size:.74rem;">Ana Reyes</span></td>
-                  <td style="color:#8a9baa;">Mar 5</td><td>₱5,800</td>
-                  <td><span class="dash-badge dash-badge--blue">In Progress</span></td>
-                </tr>
-                <tr>
-                  <td><strong>SEO Audit</strong><br><span style="color:#8a9baa;font-size:.74rem;">Rico Bautista</span></td>
-                  <td style="color:#8a9baa;">Mar 3</td><td>₱900</td>
-                  <td><span class="dash-badge dash-badge--yellow">Pending</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Social Media Kit</strong><br><span style="color:#8a9baa;font-size:.74rem;">Liza Torres</span></td>
-                  <td style="color:#8a9baa;">Mar 1</td><td>₱2,500</td>
-                  <td><span class="dash-badge dash-badge--green">Completed</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="dash-panel">
-            <div class="dash-panel__header">
-              <span class="dash-panel__title">Recent Activity</span>
-              <a class="dash-panel__link">Clear all</a>
-            </div>
-            <div class="dash-activity-item">
-              <div class="dash-activity-dot" style="background:#22c55e;"></div>
-              <div><div class="dash-activity-text">New order from <strong>Mark Santos</strong></div><div class="dash-activity-time">2 hours ago</div></div>
-            </div>
-            <div class="dash-activity-item">
-              <div class="dash-activity-dot" style="background:#00c8ef;"></div>
-              <div><div class="dash-activity-text"><strong>Ana Reyes</strong> sent a message</div><div class="dash-activity-time">4 hours ago</div></div>
-            </div>
-            <div class="dash-activity-item">
-              <div class="dash-activity-dot" style="background:#f5a623;"></div>
-              <div><div class="dash-activity-text"><strong>"Logo Design"</strong> got a 5★ review</div><div class="dash-activity-time">Yesterday</div></div>
-            </div>
-            <div class="dash-activity-item">
-              <div class="dash-activity-dot" style="background:#a78bfa;"></div>
-              <div><div class="dash-activity-text">Payment of <strong>₱1,200</strong> released</div><div class="dash-activity-time">Mar 6</div></div>
-            </div>
-          </div>
+        <!-- Lower panels (populated dynamically) -->
+        <div class="dash-lower" id="lowerPanels" style="display:none;">
+          <!-- Will be populated by JavaScript based on role -->
         </div>
 
       </div><!-- /#page-dashboard -->
 
 
-      <!-- SERVICES PAGE -->
+      <!-- JOBS PAGE (Client = Post Jobs, Freelancer = Browse Jobs) -->
       <div id="page-services" style="display:none;">
 
-        <!-- Service toolbar (role-dependent) -->
+        <!-- Job toolbar (role-dependent) -->
         <div class="services-toolbar">
-          <!-- Client: Add Service -->
-          <button id="addServiceBtn" class="services-add-btn" style="display:none;" onclick="openAddService()">
+          <!-- Client: Post Job -->
+          <button id="postJobBtn" class="services-add-btn" style="display:none;" onclick="openPostJob()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
             Post Job
           </button>
-          <!-- Freelancer: Accept Service -->
-          <button id="acceptServiceBtn" class="services-add-btn" style="display:none;" onclick="openAcceptService()">
+          <!-- Freelancer: Browse Jobs -->
+          <button id="browseJobsBtn" class="services-add-btn" style="display:none;" onclick="openBrowseJobs()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
             Browse & Accept Jobs
           </button>
         </div>
 
-        <!-- My Services header bar -->
-        <div class="services-header-bar">My Services</div>
+        <!-- Header bar -->
+        <div class="services-header-bar" id="jobsHeaderBar">My Jobs</div>
 
         <!-- Filter tabs -->
-        <div class="services-tabs">
-          <button class="services-tab active" onclick="filterServices('all', this)">All</button>
-          <button class="services-tab" onclick="filterServices('completed', this)">Completed</button>
-          <button class="services-tab" onclick="filterServices('uncompleted', this)">Uncompleted</button>
+        <div class="services-tabs" id="jobFilterTabs">
+          <button class="services-tab active" onclick="filterJobs('all', this)">All</button>
+          <button class="services-tab" onclick="filterJobs('open', this)">Open</button>
+          <button class="services-tab" onclick="filterJobs('completed', this)">Completed</button>
         </div>
 
-        <!-- Services grid -->
-        <div class="services-grid" id="servicesGrid">
+        <!-- Jobs grid -->
+        <div class="services-grid" id="jobsGrid">
           <!-- Populated by JS -->
         </div>
 
@@ -510,6 +429,9 @@ if (!localStorage.getItem('gighub_user')) {
             </label>
             <button type="submit" style="background:#1b3d7a;color:#fff;border:none;border-radius:8px;padding:10px 0;font-weight:700;cursor:pointer;">Save Changes</button>
           </form>
+          <div style="margin-top:30px;padding-top:20px;border-top:1px solid #e0e8f0;">
+            <button onclick="logout()" style="width:100%;background:#f44336;color:#fff;border:none;border-radius:8px;padding:12px 0;font-weight:700;cursor:pointer;font-size:.95rem;">Sign Out</button>
+          </div>
         </div>
       </div>
 
@@ -542,24 +464,63 @@ if (!localStorage.getItem('gighub_user')) {
 </div>
 
 
-<!-- ADD SERVICE MODAL -->
-<div class="role-modal-overlay" id="addServiceOverlay">
-  <div class="role-modal" style="width:480px;">
-    <div class="role-modal__title">Add New Service</div>
-    <div class="role-modal__sub">Fill in the details for your new gig</div>
+<!-- EDIT JOB MODAL (Client) -->
+<div class="role-modal-overlay" id="editJobOverlay">
+  <div class="role-modal" style="width:520px;max-height:90vh;overflow-y:auto;">
+    <div class="role-modal__title">Edit Job</div>
+    <div class="role-modal__sub">Update your job details</div>
     <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
-      <input id="svcTitle"    class="auth-field__input" type="text"   placeholder="Service title" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;" />
-      <input id="svcPrice"    class="auth-field__input" type="text"   placeholder="Price (e.g. ₱1,500)" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;" />
-      <select id="svcCategory" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;color:#4a5a6a;">
-        <option value="">Category</option>
-        <option>Design</option><option>Development</option><option>Writing</option>
-        <option>Marketing</option><option>Video & Animation</option><option>Other</option>
-      </select>
-      <textarea id="svcDesc" placeholder="Short description…" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;resize:vertical;min-height:80px;"></textarea>
+      <input id="editJobTitle" class="auth-field__input" type="text" placeholder="Job title" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;" />
+      
+      <textarea id="editJobDescription" placeholder="Job description" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;resize:vertical;min-height:100px;"></textarea>
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <input id="editJobBudgetMin" type="number" placeholder="Min Budget (₱)" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;" />
+        <input id="editJobBudgetMax" type="number" placeholder="Max Budget (₱)" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;" />
+      </div>
+      
+      <input id="editJobDuration" type="text" placeholder="Expected duration (e.g. 2 weeks)" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;" />
     </div>
     <div style="display:flex;gap:12px;">
-      <button class="role-modal__confirm" onclick="saveService()" style="flex:1;">Save Service</button>
-      <button onclick="closeAddService()" style="flex:1;border:2px solid #e0e8f0;background:#fff;border-radius:999px;padding:13px;font-family:Poppins,sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;color:#7a8fa0;">Cancel</button>
+      <button class="role-modal__confirm" onclick="saveEditJob()" style="flex:1;">Save Changes</button>
+      <button onclick="closeEditJob()" style="flex:1;border:2px solid #e0e8f0;background:#fff;border-radius:999px;padding:13px;font-family:Poppins,sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;color:#7a8fa0;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- POST JOB MODAL (Client) -->
+<div class="role-modal-overlay" id="postJobOverlay">
+  <div class="role-modal" style="width:520px;max-height:90vh;overflow-y:auto;">
+    <div class="role-modal__title">Post a New Job</div>
+    <div class="role-modal__sub">Tell freelancers what you need done</div>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
+      <input id="jobTitle" class="auth-field__input" type="text" placeholder="Job title (e.g. Logo Design)" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;" />
+      
+      <select id="jobCategory" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;color:#4a5a6a;">
+        <option value="">Select Category</option>
+        <!-- Populated by JS -->
+      </select>
+      
+      <select id="jobSubcategory" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;color:#4a5a6a;">
+        <option value="">Select Subcategory</option>
+        <!-- Populated by JS -->
+      </select>
+      
+      <textarea id="jobDescription" placeholder="Job description - what do you need?" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;resize:vertical;min-height:100px;"></textarea>
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <input id="jobBudgetMin" type="number" placeholder="Min Budget (₱)" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;" />
+        <input id="jobBudgetMax" type="number" placeholder="Max Budget (₱)" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;" />
+      </div>
+      
+      <input id="jobDuration" type="text" placeholder="Expected duration (e.g. 2 weeks)" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;" />
+      
+      <input id="jobAttachment" type="text" placeholder="Attachment filename (optional)" style="border:1.5px solid #e0e8f0;border-radius:8px;padding:10px 14px;font-family:Poppins,sans-serif;font-size:.86rem;outline:none;" />
+    </div>
+    <div style="display:flex;gap:12px;">
+      <button class="role-modal__confirm" onclick="submitJob()" style="flex:1;">Post Job</button>
+      <button onclick="closePostJob()" style="flex:1;border:2px solid #e0e8f0;background:#fff;border-radius:999px;padding:13px;font-family:Poppins,sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;color:#7a8fa0;">Cancel</button>
     </div>
   </div>
 </div>
@@ -577,25 +538,38 @@ if (!localStorage.getItem('gighub_user')) {
   let isEditingProfile = false;
   let portfolioObjectUrl = null;
   let account = null;
-  let isBrowsingAvailableServices = false;
+  let isBrowsingAvailableJobs = false;
+  let jobs = [];
+  let categories = [];
 
   /* Independent profiles per user/role with credentials */
   let profiles = { freelancer: {}, client: {} };
-  let services = [];
 
   /* ══════════════════════════════════════════
      PAGE NAVIGATION
      ══════════════════════════════════════════ */
   function setPage(btn) {
     const page = btn.dataset.page;
+    console.log('🔖 setPage called with:', page);
     document.querySelectorAll('.dash-nav__item').forEach(el => el.classList.remove('active'));
     btn.classList.add('active');
     document.querySelectorAll('[id^="page-"]').forEach(el => el.style.display = 'none');
     document.getElementById('page-' + page).style.display = '';
     if (page === 'services') {
-      isBrowsingAvailableServices = false;
-      renderServices('all');
-      updateServiceButtons();
+      console.log('📂 Switching to Services tab - will load and render jobs');
+      isBrowsingAvailableJobs = false;
+      activeJobFilter = 'all'; // Reset filter
+      loadJobsForRole().then(() => {
+        console.log('✅ loadJobsForRole completed, now rendering...');
+        renderJobs(activeJobFilter);
+        updateJobButtons();
+        // Reset filter buttons
+        document.querySelectorAll('.services-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.services-tab')[0]?.classList.add('active');
+      }).catch(err => {
+        console.error('❌ Error loading jobs:', err);
+        renderJobs(activeJobFilter);
+      });
     }
     if (page === 'profile')  renderProfile();
     if (page === 'messages') {
@@ -623,13 +597,13 @@ if (!localStorage.getItem('gighub_user')) {
     currentUser = sessionUser;
 
     try {
-      const [userRes, servRes] = await Promise.all([
+      const [userRes, catRes] = await Promise.all([
         fetch(`${API_BASE}/users/${encodeURIComponent(currentUser)}`),
-        fetch(`${API_BASE}/services`)
+        fetch(`${API_BASE}/categories`)
       ]);
 
       const userData = await userRes.json();
-      const servData = await servRes.json();
+      const catData = await catRes.json();
 
       if (!userRes.ok || !userData.success) {
         throw new Error(userData.message || 'Could not load your account.');
@@ -639,8 +613,11 @@ if (!localStorage.getItem('gighub_user')) {
       profiles = account.roles;
       currentRole = account.currentRole || 'freelancer';
       pendingRole = currentRole;
-      services = servData.success ? servData.services : [];
+      categories = catData.success ? catData.categories : [];
       document.querySelector('.dash-topbar__username').textContent = account.username;
+      
+      // Load jobs based on role
+      await loadJobsForRole();
     } catch (err) {
       console.error('Failed to load initial data:', err);
       localStorage.removeItem('gighub_user');
@@ -650,25 +627,31 @@ if (!localStorage.getItem('gighub_user')) {
 
     renderProfile();
     applyTheme(currentRole);
-    updateServiceButtons();
+    updateJobButtons();
+    populateCategoryDropdown();
   });
 
-  /* Update service buttons based on current role */
-  function updateServiceButtons() {
+  /* Update job buttons based on current role */
+  function updateJobButtons() {
     const isFreelancer = currentRole === 'freelancer';
-    const addBtn = document.getElementById('addServiceBtn');
-    const acceptBtn = document.getElementById('acceptServiceBtn');
+    const postBtn = document.getElementById('postJobBtn');
+    const browseBtn = document.getElementById('browseJobsBtn');
+    
+    if (!postBtn || !browseBtn) {
+      console.warn('Job buttons not found in DOM');
+      return;
+    }
     
     if (isFreelancer) {
-      addBtn.style.display = 'none';
-      acceptBtn.style.display = 'inline-flex';
-      acceptBtn.style.borderColor = '#1b3d7a';
-      acceptBtn.style.color = '#1b3d7a';
+      postBtn.style.display = 'none';
+      browseBtn.style.display = 'inline-flex';
+      browseBtn.style.borderColor = '#1b3d7a';
+      browseBtn.style.color = '#1b3d7a';
     } else {
-      addBtn.style.display = 'inline-flex';
-      acceptBtn.style.display = 'none';
-      addBtn.style.borderColor = '#f08020';
-      addBtn.style.color = '#f08020';
+      postBtn.style.display = 'inline-flex';
+      browseBtn.style.display = 'none';
+      postBtn.style.borderColor = '#f08020';
+      postBtn.style.color = '#f08020';
     }
   }
 
@@ -689,12 +672,32 @@ if (!localStorage.getItem('gighub_user')) {
     currentRole = pendingRole;
     document.getElementById('roleModalOverlay').classList.remove('active');
     applyTheme(currentRole);
-    updateServiceButtons();
+    updateJobButtons();
     saveSettings(null, { silent: true, persistPassword: false, overrideRole: currentRole });
+    
+    // Reset filter and reload jobs for new role
+    activeJobFilter = 'all';
+    loadJobsForRole().then(() => {
+      renderJobs(activeJobFilter);
+      // Reset filter buttons
+      document.querySelectorAll('.services-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.services-tab')[0]?.classList.add('active');
+    }).catch(err => {
+      console.error('Error loading jobs after role change:', err);
+    });
+    
     // If profile page is open, re-render for new role
     if (document.getElementById('page-profile').style.display !== 'none') renderProfile();
   }
   document.getElementById('roleModalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+  });
+  
+  document.getElementById('editJobOverlay').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('active');
+  });
+  
+  document.getElementById('postJobOverlay').addEventListener('click', function(e) {
     if (e.target === this) this.classList.remove('active');
   });
 
@@ -711,13 +714,6 @@ if (!localStorage.getItem('gighub_user')) {
     document.getElementById('welcomeDesc').textContent  = isFL
       ? 'Connect with clients who value your expertise and grow your freelancing career with confidence.'
       : 'Work with skilled professionals who can bring your ideas to life — efficiently and reliably';
-    document.getElementById('statGigs').textContent      = isFL ? '8'       : '5';
-    document.getElementById('statGigsLbl').textContent   = isFL ? 'Active Gigs'    : 'Posted Jobs';
-    document.getElementById('statOrders').textContent    = isFL ? '14'      : '7';
-    document.getElementById('statOrdersLbl').textContent = isFL ? 'Active Orders'   : 'Hired Freelancers';
-    document.getElementById('statMoney').textContent     = isFL ? '₱12,400' : '₱28,600';
-    document.getElementById('statMoneyLbl').textContent  = isFL ? 'Earnings' : 'Total Spent';
-    document.getElementById('ordersTitle').textContent   = isFL ? 'Recent Orders' : 'My Projects';
   }
 
   /* ══════════════════════════════════════════
@@ -1005,119 +1001,393 @@ if (!localStorage.getItem('gighub_user')) {
     */
 
   /* ══════════════════════════════════════════
-     SERVICES
+     JOBS MANAGEMENT
      ══════════════════════════════════════════ */
-  let activeFilter = 'all';
+  let activeJobFilter = 'all';
 
-  function filterServices(filter, btn) {
-    activeFilter = filter;
+  // Load jobs based on current role (CLIENT or FREELANCER)
+  async function loadJobsForRole() {
+    try {
+      const isClient = currentRole === 'client';
+      const endpoint = isClient
+        ? `${API_BASE}/jobs/my/${encodeURIComponent(currentUser)}`
+        : `${API_BASE}/jobs/browse/${encodeURIComponent(currentUser)}`;
+
+      const res = await fetch(endpoint);
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Failed to load jobs.');
+      jobs = data.jobs || [];
+
+      // Also load categories
+      const catRes = await fetch(`${API_BASE}/categories`);
+      const catData = await catRes.json();
+      if (catData.success) categories = catData.categories || [];
+
+      console.log(`✅ Loaded ${jobs.length} jobs for ${currentRole} (${currentUser}):`, jobs);
+      renderJobs(activeJobFilter);
+    } catch (err) {
+      console.error('Error loading jobs:', err);
+      jobs = [];
+      renderJobs(activeJobFilter);
+    }
+  }
+
+  function getCategoryName(catId) {
+    const cat = categories.find(c => c.id === catId);
+    return cat ? `${cat.icon} ${cat.name}` : catId;
+  }
+
+  function populateCategoryDropdown() {
+    const select = document.getElementById('jobCategory');
+    if (!select || !categories.length) return;
+    select.innerHTML = '<option value="">Select Category</option>';
+    categories.forEach(cat => {
+      const option = document.createElement('option');
+      option.value = cat.id;
+      option.textContent = `${cat.icon} ${cat.name}`;
+      select.appendChild(option);
+    });
+    select.addEventListener('change', updateSubcategoryDropdown);
+  }
+
+  function updateSubcategoryDropdown() {
+    const catSelect = document.getElementById('jobCategory');
+    const subcatSelect = document.getElementById('jobSubcategory');
+    if (!catSelect || !subcatSelect) return;
+
+    const selectedCatId = catSelect.value;
+    const selectedCat = categories.find(cat => cat.id === selectedCatId);
+
+    subcatSelect.innerHTML = '<option value="">Select Subcategory</option>';
+    if (selectedCat && selectedCat.subcategories) {
+      selectedCat.subcategories.forEach(sub => {
+        const opt = document.createElement('option');
+        opt.value = sub;
+        opt.textContent = sub;
+        subcatSelect.appendChild(opt);
+      });
+    }
+  }
+
+  function filterJobs(filter, btn) {
+    activeJobFilter = filter;
     document.querySelectorAll('.services-tab').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
-    renderServices(filter);
+    renderJobs(filter);
   }
 
-  function renderServices(filter) {
-    const grid = document.getElementById('servicesGrid');
-    let filtered = [...services];
-
-    if (currentRole === 'client') {
-      filtered = filtered.filter(service => service.createdBy === currentUser);
-    } else if (isBrowsingAvailableServices) {
-      filtered = filtered.filter(service => service.createdBy !== currentUser && !service.acceptedBy);
-    } else {
-      filtered = filtered.filter(service => service.acceptedBy === currentUser);
-    }
-
-    filtered = filter === 'all' ? filtered : filtered.filter(service => service.status === filter);
-    
-    if (filtered.length === 0) {
-      const emptyLabel = currentRole === 'client' ? 'No jobs posted yet.' : (isBrowsingAvailableServices ? 'No available jobs to accept.' : 'No accepted jobs yet.');
-      grid.innerHTML = `<div class="services-empty" style="grid-column:1/-1;"><div class="services-empty__icon">📭</div><div class="services-empty__text">${emptyLabel}</div></div>`;
+  function renderJobs(filter) {
+    const grid = document.getElementById('jobsGrid');
+    if (!grid) {
+      console.warn('jobsGrid element not found');
       return;
     }
-    grid.innerHTML = filtered.map(s => {
-      const bc = s.status === 'completed' ? 'background:#dcfce7;color:#15803d;' : 'background:#fef9c3;color:#92400e;';
-      const action = currentRole === 'freelancer' && isBrowsingAvailableServices
-        ? `<button onclick="acceptService(${s.id})" style="margin-top:12px;background:#1b3d7a;color:#fff;border:none;border-radius:999px;padding:10px 14px;font-weight:700;cursor:pointer;">Accept Job</button>`
-        : '';
-      const ownerText = currentRole === 'client' ? `Accepted by: ${s.acceptedBy || 'No one yet'}` : `Posted by: ${s.createdBy}`;
-      return `<div class="service-card"><div class="service-card__img">${s.emoji}</div><div class="service-card__body"><div class="service-card__title">${s.title}</div><div class="service-card__price">${s.price}</div><div style="font-size:.78rem;color:#7a8fa0;margin-top:6px;">${ownerText}</div><span class="service-card__status" style="${bc}">${s.status.charAt(0).toUpperCase()+s.status.slice(1)}</span>${action}</div></div>`;
-    }).join('');
-  }
 
-  function openAddService()  { document.getElementById('addServiceOverlay').classList.add('active'); }
-  function closeAddService() { document.getElementById('addServiceOverlay').classList.remove('active'); }
-  function openAcceptService() {
-    isBrowsingAvailableServices = true;
-    renderServices(activeFilter);
-  }
+    let filtered = [...(jobs || [])];
+    const isClient = currentRole === 'client';
 
-  async function acceptService(serviceId) {
-    try {
-      const response = await fetch(`${API_BASE}/services/${serviceId}/accept`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: currentUser, role: currentRole })
-      });
-      const data = await response.json();
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Could not accept service.');
-      }
-      services = services.map(service => service.id === data.service.id ? data.service : service);
-      if (!account.acceptedServices.includes(data.service.id)) account.acceptedServices.push(data.service.id);
-      isBrowsingAvailableServices = false;
-      renderServices(activeFilter);
-      alert('Service accepted successfully.');
-    } catch (error) {
-      alert(error.message);
+    console.log(`🎨 renderJobs called: filter="${filter}", total jobs=${filtered.length}, role=${currentRole}, user=${currentUser}`);
+
+    // Filter by status
+    if (filter && filter !== 'all') {
+      filtered = filtered.filter(job => job.status === filter);
     }
+
+    console.log(`✂️ After status filtering (${filter}): ${filtered.length} jobs match`);
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `
+        <div class="services-empty" style="grid-column:1/-1;text-align:center;padding:60px 20px;">
+          <div class="services-empty__icon">${isClient ? '📋' : '🔍'}</div>
+          <div class="services-empty__text" style="color:#7a8fa0;">
+            ${isClient ? 'You haven\'t posted any jobs yet.' : 'No available jobs to browse right now.'}
+          </div>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = '';
+    filtered.forEach(job => {
+      const card = document.createElement('div');
+      card.className = 'service-card';
+      card.style.cursor = 'pointer';
+
+      // Status badge color
+      let badgeClass = 'dash-badge--blue';
+      let statusLabel = job.status;
+      if (job.status === 'open') { badgeClass = 'dash-badge--green'; statusLabel = 'Open'; }
+      else if (job.status === 'in-progress') { badgeClass = 'dash-badge--yellow'; statusLabel = 'In Progress'; }
+      else if (job.status === 'completed') { badgeClass = 'dash-badge--blue'; statusLabel = 'Completed'; }
+      else if (job.status === 'cancelled') { badgeClass = 'dash-badge--red'; statusLabel = 'Cancelled'; }
+
+      const budgetText = (job.budgetMin || job.budgetMax)
+        ? `₱${job.budgetMin || 0} – ₱${job.budgetMax || 0}`
+        : 'Budget not set';
+
+      const categoryLabel = getCategoryName(job.category);
+      const subcatLabel = job.subcategory ? ` › ${job.subcategory}` : '';
+      const postedDate = job.postedAt ? new Date(job.postedAt).toLocaleDateString() : '';
+      const acceptedLabel = job.acceptedBy ? `<div style="font-size:0.75rem;color:#16a34a;margin-top:4px;">Accepted by: <strong>${job.acceptedBy}</strong></div>` : '';
+
+      // Action buttons
+      let actionButtons = '';
+      if (isClient) {
+        // Client sees Edit & Delete on their own jobs
+        actionButtons = `
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button onclick="event.stopPropagation();openEditJob('${job.id}')" style="flex:1;padding:6px 12px;font-size:0.75rem;font-weight:600;font-family:Poppins,sans-serif;border:1.5px solid #1b3d7a;background:#fff;color:#1b3d7a;border-radius:8px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='#1b3d7a';this.style.color='#fff'" onmouseout="this.style.background='#fff';this.style.color='#1b3d7a'">✏️ Edit</button>
+            <button onclick="event.stopPropagation();deleteJob('${job.id}')" style="flex:1;padding:6px 12px;font-size:0.75rem;font-weight:600;font-family:Poppins,sans-serif;border:1.5px solid #ef4444;background:#fff;color:#ef4444;border-radius:8px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.background='#ef4444';this.style.color='#fff'" onmouseout="this.style.background='#fff';this.style.color='#ef4444'">🗑 Delete</button>
+          </div>`;
+      } else {
+        // Freelancer sees Accept button (only on open jobs not yet accepted)
+        if (job.status === 'open' && !job.acceptedBy) {
+          actionButtons = `
+            <div style="margin-top:10px;">
+              <button onclick="event.stopPropagation();acceptJobFromCard('${job.id}')" style="width:100%;padding:8px 12px;font-size:0.78rem;font-weight:700;font-family:Poppins,sans-serif;border:none;background:var(--cyan);color:#fff;border-radius:8px;cursor:pointer;box-shadow:0 2px 10px rgba(0,200,240,0.3);transition:all 0.2s;" onmouseover="this.style.background='#00afd4'" onmouseout="this.style.background='var(--cyan)'">✋ Accept Job</button>
+            </div>`;
+        }
+      }
+
+      card.innerHTML = `
+        <div class="service-card__img" style="display:flex;align-items:center;justify-content:center;font-size:2rem;background:linear-gradient(135deg,#e8f4fd,#d0eafb);">
+          ${categoryLabel.split(' ')[0] || '💼'}
+        </div>
+        <div class="service-card__body">
+          <div class="service-card__title" style="font-size:0.9rem;font-weight:700;color:#1a2a3a;margin-bottom:4px;">${job.title}</div>
+          <div style="font-size:0.75rem;color:#7a8fa0;margin-bottom:6px;">${categoryLabel}${subcatLabel}</div>
+          <div style="font-size:0.78rem;color:#5a6a7a;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${job.description}</div>
+          <div class="service-card__price" style="font-size:0.85rem;font-weight:700;margin-bottom:4px;">${budgetText}</div>
+          ${job.duration ? `<div style="font-size:0.72rem;color:#8a9baa;">⏱ ${job.duration}</div>` : ''}
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+            <span class="dash-badge ${badgeClass}" style="font-size:0.7rem;">${statusLabel}</span>
+            <span style="font-size:0.7rem;color:#aab5c0;">${postedDate}</span>
+          </div>
+          ${isClient ? '' : `<div style="font-size:0.72rem;color:#8a9baa;margin-top:4px;">Posted by: <strong>${job.postedBy}</strong></div>`}
+          ${acceptedLabel}
+          ${actionButtons}
+        </div>`;
+
+      grid.appendChild(card);
+    });
   }
 
-  async function saveService() {
-    const title = document.getElementById('svcTitle').value.trim();
-    const price = document.getElementById('svcPrice').value.trim();
-    if (!title || !price) return;
+  function openPostJob() {
+    // Reset form fields
+    resetJobForm();
+    document.getElementById('postJobOverlay').classList.add('active');
+  }
 
-    const emojis = ['🎨','💻','📱','📊','✍️','🎬'];
-    const newService = {
-      username: currentUser,
-      role: currentRole,
-      title,
-      price,
-      cat: document.getElementById('svcCategory').value || 'Other',
-      desc: document.getElementById('svcDesc').value.trim(),
-      emoji: emojis[Math.floor(Math.random() * emojis.length)],
-    };
+  function closePostJob() {
+    document.getElementById('postJobOverlay').classList.remove('active');
+    resetJobForm();
+  }
+
+  function openBrowseJobs() {
+    isBrowsingAvailableJobs = !isBrowsingAvailableJobs;
+    activeJobFilter = 'all';
+    loadJobsForRole();
+  }
+
+  function resetJobForm() {
+    const fields = ['jobTitle', 'jobDescription', 'jobCategory', 'jobSubcategory', 'jobBudgetMin', 'jobBudgetMax', 'jobDuration', 'jobAttachment'];
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+  }
+
+  async function submitJob() {
+    const title = document.getElementById('jobTitle')?.value.trim();
+    const description = document.getElementById('jobDescription')?.value.trim();
+    const category = document.getElementById('jobCategory')?.value;
+    const subcategory = document.getElementById('jobSubcategory')?.value || '';
+    const budgetMin = parseFloat(document.getElementById('jobBudgetMin')?.value) || 0;
+    const budgetMax = parseFloat(document.getElementById('jobBudgetMax')?.value) || 0;
+    const duration = document.getElementById('jobDuration')?.value.trim() || '';
+    const attachmentName = document.getElementById('jobAttachment')?.value.trim() || '';
+
+    if (!title || !description || !category) {
+      alert('Please fill in the job title, description, and category.');
+      return;
+    }
 
     try {
-      const response = await fetch(`${API_BASE}/services`, {
+      const res = await fetch(`${API_BASE}/jobs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newService)
+        body: JSON.stringify({
+          username: currentUser,
+          title, description, category, subcategory,
+          budgetMin, budgetMax, duration, attachmentName
+        })
       });
-      const data = await response.json();
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || 'Failed to post job.');
 
-      if (data.success) {
-        services.push(data.service);
-        account.createdServices = Array.isArray(account.createdServices) ? account.createdServices : [];
-        account.createdServices.push(data.service.id);
-
-        closeAddService();
-        ['svcTitle','svcPrice','svcDesc'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('svcCategory').value = '';
-        renderServices(activeFilter);
-      }
+      alert('Job posted successfully!');
+      closePostJob();
+      await loadJobsForRole();
     } catch (err) {
-      console.error('API Error saving service:', err);
+      alert('Error posting job: ' + err.message);
     }
   }
 
-  document.getElementById('addServiceOverlay').addEventListener('click', function(e) { if(e.target===this) closeAddService(); });
+  async function acceptJobFromCard(jobId) {
+    if (!confirm('Are you sure you want to accept this job?')) return;
+    try {
+      const res = await fetch(`${API_BASE}/jobs/${jobId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'in-progress', acceptedBy: currentUser })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || 'Failed to accept job.');
+      alert('Job accepted!');
+      await loadJobsForRole();
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  }
+
+  // Edit job (for clients only)
+  let editingJobId = null;
+
+  function openEditJob(jobId) {
+    const job = jobs.find(j => j.id === jobId);
+    if (!job) return;
+    editingJobId = jobId;
+
+    const editTitle = document.getElementById('editJobTitle');
+    const editDesc = document.getElementById('editJobDescription');
+    const editCat = document.getElementById('editJobCategory');
+    const editSubcat = document.getElementById('editJobSubcategory');
+    const editBudgetMin = document.getElementById('editJobBudgetMin');
+    const editBudgetMax = document.getElementById('editJobBudgetMax');
+    const editDuration = document.getElementById('editJobDuration');
+    const editStatus = document.getElementById('editJobStatus');
+
+    if (editTitle) editTitle.value = job.title || '';
+    if (editDesc) editDesc.value = job.description || '';
+    if (editCat) {
+      editCat.innerHTML = '<option value="">Select Category</option>';
+      categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat.id;
+        opt.textContent = `${cat.icon} ${cat.name}`;
+        if (cat.id === job.category) opt.selected = true;
+        editCat.appendChild(opt);
+      });
+      // Populate subcategory for current category
+      updateEditSubcategoryDropdown(job.subcategory);
+      editCat.onchange = () => updateEditSubcategoryDropdown('');
+    }
+    if (editBudgetMin) editBudgetMin.value = job.budgetMin || '';
+    if (editBudgetMax) editBudgetMax.value = job.budgetMax || '';
+    if (editDuration) editDuration.value = job.duration || '';
+    if (editStatus) editStatus.value = job.status || 'open';
+
+    document.getElementById('editJobOverlay').classList.add('active');
+  }
+
+  function updateEditSubcategoryDropdown(preselect) {
+    const catSelect = document.getElementById('editJobCategory');
+    const subcatSelect = document.getElementById('editJobSubcategory');
+    if (!catSelect || !subcatSelect) return;
+
+    const selectedCat = categories.find(c => c.id === catSelect.value);
+    subcatSelect.innerHTML = '<option value="">Select Subcategory</option>';
+    if (selectedCat && selectedCat.subcategories) {
+      selectedCat.subcategories.forEach(sub => {
+        const opt = document.createElement('option');
+        opt.value = sub;
+        opt.textContent = sub;
+        if (sub === preselect) opt.selected = true;
+        subcatSelect.appendChild(opt);
+      });
+    }
+  }
+
+  function closeEditJob() {
+    document.getElementById('editJobOverlay').classList.remove('active');
+    editingJobId = null;
+  }
+
+  async function saveEditJob() {
+    if (!editingJobId) return;
+
+    const title = document.getElementById('editJobTitle')?.value.trim();
+    const description = document.getElementById('editJobDescription')?.value.trim();
+    const category = document.getElementById('editJobCategory')?.value;
+    const subcategory = document.getElementById('editJobSubcategory')?.value || '';
+    const budgetMin = parseFloat(document.getElementById('editJobBudgetMin')?.value) || 0;
+    const budgetMax = parseFloat(document.getElementById('editJobBudgetMax')?.value) || 0;
+    const duration = document.getElementById('editJobDuration')?.value.trim() || '';
+    const status = document.getElementById('editJobStatus')?.value || 'open';
+
+    if (!title || !description || !category) {
+      alert('Title, description, and category are required.');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/jobs/${editingJobId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: currentUser,
+          title, description, category, subcategory,
+          budgetMin, budgetMax, duration, status
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || 'Failed to update job.');
+
+      alert('Job updated!');
+      closeEditJob();
+      await loadJobsForRole();
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  }
+
+  async function deleteJob(jobId) {
+    if (!confirm('Are you sure you want to delete this job? This cannot be undone.')) return;
+    try {
+      const res = await fetch(`${API_BASE}/jobs/${jobId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: currentUser })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || 'Failed to delete job.');
+      alert('Job deleted.');
+      await loadJobsForRole();
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  }
+
+  async function loadFreelancerRecommendations(jobCategory) {
+    try {
+      const res = await fetch(`${API_BASE}/freelancers/by-category/${encodeURIComponent(jobCategory)}`);
+      const data = await res.json();
+      if (data.success) return data.freelancers || [];
+      return [];
+    } catch (err) {
+      console.error('Error loading recommendations:', err);
+      return [];
+    }
+  }
+
+  document.getElementById('postJobOverlay').addEventListener('click', function(e) { 
+    if(e.target===this) closePostJob(); 
+  });
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       document.getElementById('roleModalOverlay').classList.remove('active');
-      closeAddService();
+      document.getElementById('editJobOverlay').classList.remove('active');
+      document.getElementById('postJobOverlay').classList.remove('active');
     }
   });
 
@@ -1257,29 +1527,43 @@ window.addEventListener('load', () => {
     return false;
   }
 
+  /* Sign out function */
+  function logout() {
+    if (!confirm('Are you sure you want to sign out?')) return;
+    localStorage.removeItem('gighub_user');
+    localStorage.removeItem('gighub_role');
+    window.location.href = 'login.html';
+  }
+
   // SERVICE DETAILS MODAL LOGIC
   function openServiceDetails(serviceId) {
-    const svc = services.find(s => s.id === serviceId);
+    const svc = (typeof services !== 'undefined' ? services : []).find(s => s.id === serviceId);
     if (!svc) return;
-    document.getElementById('svcModalTitle').textContent = `${svc.emoji || ''} ${svc.title}`;
-    document.getElementById('svcModalBody').innerHTML = `
+    const modal = document.getElementById('serviceDetailsOverlay');
+    if (!modal) return;
+    const titleEl = document.getElementById('svcModalTitle');
+    const bodyEl = document.getElementById('svcModalBody');
+    if (titleEl) titleEl.textContent = `${svc.emoji || ''} ${svc.title}`;
+    if (bodyEl) bodyEl.innerHTML = `
       <div><b>Category:</b> ${svc.cat}</div>
       <div><b>Price:</b> ${svc.price}</div>
       <div><b>Status:</b> ${svc.status.charAt(0).toUpperCase() + svc.status.slice(1)}</div>
       <div><b>Posted by:</b> ${svc.createdBy.charAt(0).toUpperCase() + svc.createdBy.slice(1)}</div>
       ${svc.desc ? `<div style="margin-top:10px;"><b>Description:</b><br>${svc.desc}</div>` : ''}
     `;
-    document.getElementById('serviceDetailsOverlay').style.display = '';
+    modal.style.display = '';
   }
   function closeServiceDetails() {
-    document.getElementById('serviceDetailsOverlay').style.display = 'none';
+    const modal = document.getElementById('serviceDetailsOverlay');
+    if (modal) modal.style.display = 'none';
   }
   // Optional: close modal when clicking outside
-  document.getElementById('serviceDetailsOverlay').addEventListener('click', function(e) {
-    if (e.target === this) closeServiceDetails();
-  });
-
-  // ...existing code...
+  const svcOverlay = document.getElementById('serviceDetailsOverlay');
+  if (svcOverlay) {
+    svcOverlay.addEventListener('click', function(e) {
+      if (e.target === this) closeServiceDetails();
+    });
+  }
   
 </script>
 

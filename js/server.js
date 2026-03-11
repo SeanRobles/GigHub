@@ -17,6 +17,8 @@ const IMAGES_DIR = path.join(ROOT_DIR, 'Images');
 const PROFILES_FILE = path.join(DATA_DIR, 'profiles.json');
 const SERVICES_FILE = path.join(DATA_DIR, 'services.json');
 const MESSAGES_FILE = path.join(DATA_DIR, 'messages.json');
+const JOBS_FILE = path.join(DATA_DIR, 'jobs.json');
+const CATEGORIES_FILE = path.join(DATA_DIR, 'categories.json');
 
 const EMAILJS_SERVICE_ID = process.env.EMAILJS_SERVICE_ID || 'service_1l0xsny';
 const EMAILJS_PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY || process.env.EMAILJS_USER_ID || '';
@@ -151,11 +153,38 @@ function saveMessages(messages) {
   writeJson(MESSAGES_FILE, messages);
 }
 
+function loadJobs() {
+  return readJson(JOBS_FILE, []);
+}
+
+function saveJobs(jobs) {
+  writeJson(JOBS_FILE, jobs);
+}
+
+function loadCategories() {
+  return readJson(CATEGORIES_FILE, { jobCategories: [] });
+}
+
 function ensureDataFiles() {
   ensureDir(DATA_DIR);
   if (!fs.existsSync(PROFILES_FILE)) writeJson(PROFILES_FILE, defaultProfilesDb());
   if (!fs.existsSync(SERVICES_FILE)) writeJson(SERVICES_FILE, []);
   if (!fs.existsSync(MESSAGES_FILE)) writeJson(MESSAGES_FILE, []);
+  if (!fs.existsSync(JOBS_FILE)) writeJson(JOBS_FILE, []);
+  if (!fs.existsSync(CATEGORIES_FILE)) writeJson(CATEGORIES_FILE, {
+    jobCategories: [
+      { id: "web-dev", name: "Web Development", icon: "💻", subcategories: ["Frontend", "Backend", "Full Stack", "WordPress", "Shopify"] },
+      { id: "design", name: "Design", icon: "🎨", subcategories: ["UI/UX Design", "Graphic Design", "Logo Design", "Branding", "Illustration"] },
+      { id: "mobile", name: "Mobile Development", icon: "📱", subcategories: ["iOS", "Android", "React Native", "Flutter"] },
+      { id: "writing", name: "Writing & Content", icon: "✍️", subcategories: ["Copywriting", "Blog Posts", "Technical Writing", "Social Media"] },
+      { id: "marketing", name: "Digital Marketing", icon: "📊", subcategories: ["SEO", "SEM", "Social Media Marketing", "Email Marketing"] },
+      { id: "video", name: "Video & Animation", icon: "🎬", subcategories: ["Video Editing", "Animation", "Motion Graphics", "Voiceover"] },
+      { id: "business", name: "Business Services", icon: "💼", subcategories: ["Virtual Assistant", "Data Entry", "Bookkeeping", "Consultation"] },
+      { id: "music", name: "Music & Audio", icon: "🎵", subcategories: ["Music Production", "Sound Design", "Podcast Editing", "Transcription"] },
+      { id: "data", name: "Data & Analytics", icon: "📈", subcategories: ["Data Analysis", "Data Visualization", "Business Intelligence", "Database Design"] },
+      { id: "consulting", name: "Consulting", icon: "🤝", subcategories: ["IT Consulting", "Business Consulting", "Career Coaching", "Strategy"] }
+    ]
+  });
 }
 
 function sanitizeUser(account) {
@@ -584,6 +613,225 @@ app.post('/api/messages', (req, res) => {
   messages.push(message);
   saveMessages(messages);
   res.json({ success: true, message });
+});
+
+app.get('/api/categories', (req, res) => {
+  const categories = loadCategories();
+  res.json({ success: true, categories: categories.jobCategories || [] });
+});
+
+app.get('/api/jobs', (req, res) => {
+  const jobs = loadJobs();
+  const { status, postedBy } = req.query;
+  
+  let filtered = jobs;
+  if (status) {
+    filtered = filtered.filter(job => job.status === status);
+  }
+  if (postedBy) {
+    filtered = filtered.filter(job => job.postedBy === postedBy);
+  }
+  
+  res.json({ success: true, jobs: filtered });
+});
+
+app.post('/api/jobs', (req, res) => {
+  const { username, title, description, category, subcategory, budgetMin, budgetMax, duration, attachmentName } = req.body;
+  
+  if (!username || !title || !description || !category) {
+    return res.status(400).json({ success: false, message: 'Username, title, description, and category are required.' });
+  }
+
+  const db = loadProfilesDb();
+  const user = db.users[username];
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'User not found.' });
+  }
+
+  const jobs = loadJobs();
+  const job = {
+    id: Date.now().toString(),
+    title,
+    description,
+    category,
+    subcategory: subcategory || '',
+    budgetMin: budgetMin || 0,
+    budgetMax: budgetMax || 0,
+    duration: duration || '',
+    attachmentName: attachmentName || '',
+    status: 'open',
+    postedBy: username,
+    postedAt: isoNow(),
+    acceptedBy: null,
+    acceptedAt: null,
+    completed: false,
+    completedAt: null
+  };
+
+  jobs.push(job);
+  saveJobs(jobs);
+  
+  res.json({ success: true, job });
+});
+
+app.patch('/api/jobs/:id', (req, res) => {
+  const { status, acceptedBy } = req.body;
+  
+  const jobs = loadJobs();
+  const job = jobs.find(j => j.id === req.params.id);
+  
+  if (!job) {
+    return res.status(404).json({ success: false, message: 'Job not found.' });
+  }
+
+  if (status === 'in-progress' && acceptedBy) {
+    job.status = 'in-progress';
+    job.acceptedBy = acceptedBy;
+    job.acceptedAt = isoNow();
+  } else if (status === 'completed') {
+    job.status = 'completed';
+    job.completed = true;
+    job.completedAt = isoNow();
+  } else if (status === 'open') {
+    job.status = 'open';
+    job.acceptedBy = null;
+  }
+
+  saveJobs(jobs);
+  res.json({ success: true, job });
+});
+
+app.delete('/api/jobs/:id', (req, res) => {
+  const { username } = req.body;
+  
+  if (!username) {
+    return res.status(400).json({ success: false, message: 'Username is required.' });
+  }
+
+  const jobs = loadJobs();
+  const jobIndex = jobs.findIndex(j => j.id === req.params.id);
+  
+  if (jobIndex === -1) {
+    return res.status(404).json({ success: false, message: 'Job not found.' });
+  }
+
+  const job = jobs[jobIndex];
+  if (job.postedBy !== username) {
+    return res.status(403).json({ success: false, message: 'You can only delete your own jobs.' });
+  }
+
+  jobs.splice(jobIndex, 1);
+  saveJobs(jobs);
+  
+  res.json({ success: true, message: 'Job deleted.' });
+});
+
+// ════════════════════════════════════════════════════════
+// ROLE-BASED JOB ENDPOINTS
+// ════════════════════════════════════════════════════════
+
+// Get jobs for freelancer to browse (exclude their own client jobs)
+app.get('/api/jobs/browse/:username', (req, res) => {
+  const { username } = req.params;
+  const jobs = loadJobs();
+  
+  // Freelancers see client jobs, but NOT their own jobs
+  const browseJobs = jobs.filter(job => job.postedBy !== username && job.status !== 'completed');
+  
+  res.json({ success: true, jobs: browseJobs });
+});
+
+// Get user's own jobs (for client dashboard)
+app.get('/api/jobs/my/:username', (req, res) => {
+  const { username } = req.params;
+  const jobs = loadJobs();
+  
+  // Show only jobs posted by this user
+  const myJobs = jobs.filter(job => job.postedBy === username);
+  
+  res.json({ success: true, jobs: myJobs });
+});
+
+// Get single job details
+app.get('/api/jobs/detail/:jobId', (req, res) => {
+  const { jobId } = req.params;
+  const jobs = loadJobs();
+  
+  const job = jobs.find(j => j.id === jobId);
+  if (!job) {
+    return res.status(404).json({ success: false, message: 'Job not found.' });
+  }
+  
+  res.json({ success: true, job });
+});
+
+// Update job details (owner only)
+app.put('/api/jobs/:id', (req, res) => {
+  const { username, title, description, category, subcategory, budgetMin, budgetMax, duration, status } = req.body;
+  
+  if (!username) {
+    return res.status(400).json({ success: false, message: 'Username is required.' });
+  }
+
+  const jobs = loadJobs();
+  const job = jobs.find(j => j.id === req.params.id);
+  
+  if (!job) {
+    return res.status(404).json({ success: false, message: 'Job not found.' });
+  }
+
+  // Only job creator can edit
+  if (job.postedBy !== username) {
+    return res.status(403).json({ success: false, message: 'You can only edit your own jobs.' });
+  }
+
+  // Update allowed fields
+  if (title) job.title = title;
+  if (description) job.description = description;
+  if (category) job.category = category;
+  if (subcategory) job.subcategory = subcategory;
+  if (budgetMin !== undefined) job.budgetMin = budgetMin;
+  if (budgetMax !== undefined) job.budgetMax = budgetMax;
+  if (duration) job.duration = duration;
+  if (status) job.status = status;
+
+  saveJobs(jobs);
+  res.json({ success: true, message: 'Job updated.', job });
+});
+
+// Get freelancers matching job category/skills
+app.get('/api/freelancers/by-category/:category', (req, res) => {
+  const { category } = req.params;
+  const db = loadProfilesDb();
+  
+  // Find freelancers who have this skill in their profile
+  const matchingFreelancers = [];
+  
+  for (const username in db.users) {
+    const user = db.users[username];
+    const freelancerProfile = user.roles?.freelancer;
+    
+    if (!freelancerProfile) continue;
+    
+    // Check if their skills match the category (case-insensitive)
+    const skills = (freelancerProfile.skill || '').toLowerCase();
+    const tools = (freelancerProfile.tools || '').toLowerCase();
+    const categoryLower = category.toLowerCase();
+    
+    if (skills.includes(categoryLower) || tools.includes(categoryLower)) {
+      matchingFreelancers.push({
+        username,
+        name: freelancerProfile.name || username,
+        title: freelancerProfile.title || '',
+        skill: freelancerProfile.skill || '',
+        location: freelancerProfile.location || '',
+        hourly: freelancerProfile.hourly || '',
+        bio: freelancerProfile.bio || ''
+      });
+    }
+  }
+  
+  res.json({ success: true, freelancers: matchingFreelancers });
 });
 
 const PORT = process.env.PORT || 3000;

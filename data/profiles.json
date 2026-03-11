@@ -56,8 +56,66 @@
       "acceptedServices": [],
       "createdServices": [],
       "createdAt": "2026-03-11T20:04:41.908Z",
-      "updatedAt": "2026-03-11T20:30:01.252Z"
+      "updatedAt": "2026-03-11T22:49:25.652Z"
+    },
+    "sentientmonkey2040@gmail.com": {
+      "username": "sentientmonkey2040@gmail.com",
+      "email": "sentientmonkey2040@gmail.com",
+      "password": "sentientmonkey2040@gmail.com",
+      "verified": true,
+      "age": "21",
+      "currentRole": "freelancer",
+      "roles": {
+        "freelancer": {
+          "name": "Juan Juan",
+          "title": "",
+          "bio": "",
+          "languages": "",
+          "location": "",
+          "skill": "",
+          "tools": "",
+          "level": "",
+          "years": "",
+          "hourly": "",
+          "fixedMin": "",
+          "fixedMax": "",
+          "payment": "",
+          "degree": "",
+          "institution": "",
+          "gradYear": "",
+          "certs": "",
+          "portfolioFile": null,
+          "portfolioFileName": null,
+          "avatarSrc": null
+        },
+        "client": {
+          "name": "Juan Juan",
+          "title": "",
+          "bio": "",
+          "languages": "",
+          "location": "",
+          "skill": "",
+          "tools": "",
+          "level": "",
+          "years": "",
+          "hourly": "",
+          "fixedMin": "",
+          "fixedMax": "",
+          "payment": "",
+          "degree": "",
+          "institution": "",
+          "gradYear": "",
+          "certs": "",
+          "portfolioFile": null,
+          "portfolioFileName": null,
+          "avatarSrc": null
+        }
+      },
+      "acceptedServices": [],
+      "createdServices": [],
+      "createdAt": "2026-03-11T22:21:56.535Z",
+      "updatedAt": "2026-03-11T22:21:56.535Z"
     }
   },
-  "lastUpdated": "2026-03-11T20:30:01.252Z"
+  "lastUpdated": "2026-03-11T22:49:25.652Z"
 }

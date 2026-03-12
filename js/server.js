@@ -722,9 +722,23 @@ app.patch('/api/jobs/:id', (req, res) => {
     job.completed = true;
     job.completedAt = isoNow();
 
-    // Notify the freelancer that the job is marked completed
-    if (job.acceptedBy) {
-      const notifications = loadNotifications();
+    const notifications = loadNotifications();
+    const completedBy = req.body.completedBy;
+
+    if (completedBy && completedBy === job.acceptedBy) {
+      // Freelancer marked it complete — notify the client (job poster)
+      notifications.push({
+        id: Date.now().toString(),
+        to: job.postedBy,
+        type: 'job-completed',
+        message: `${completedBy} marked the job "${job.title}" as completed`,
+        jobId: job.id,
+        from: completedBy,
+        read: false,
+        timestamp: Date.now()
+      });
+    } else if (job.acceptedBy) {
+      // Client marked it complete — notify the freelancer
       notifications.push({
         id: Date.now().toString(),
         to: job.acceptedBy,
@@ -735,8 +749,8 @@ app.patch('/api/jobs/:id', (req, res) => {
         read: false,
         timestamp: Date.now()
       });
-      saveNotifications(notifications);
     }
+    saveNotifications(notifications);
   } else if (status === 'open') {
     job.status = 'open';
     job.acceptedBy = null;
@@ -776,12 +790,18 @@ app.delete('/api/jobs/:id', (req, res) => {
 // ════════════════════════════════════════════════════════
 
 // Get jobs for freelancer to browse (exclude their own client jobs)
+// Also includes jobs the freelancer has accepted (in-progress)
 app.get('/api/jobs/browse/:username', (req, res) => {
   const { username } = req.params;
   const jobs = loadJobs();
   
-  // Freelancers see client jobs, but NOT their own jobs
-  const browseJobs = jobs.filter(job => job.postedBy !== username && job.status !== 'completed');
+  // Freelancers see: open jobs from others + their own accepted in-progress jobs
+  const browseJobs = jobs.filter(job => {
+    // Always show jobs this freelancer accepted (in-progress or completed)
+    if (job.acceptedBy === username) return true;
+    // Show other users' open jobs
+    return job.postedBy !== username && job.status === 'open';
+  });
   
   res.json({ success: true, jobs: browseJobs });
 });
@@ -808,6 +828,31 @@ app.get('/api/jobs/detail/:jobId', (req, res) => {
   }
   
   res.json({ success: true, job });
+});
+
+// Activity counters for profile
+app.get('/api/jobs/activity/:username', (req, res) => {
+  const { username } = req.params;
+  const role = req.query.role || 'freelancer';
+  const jobs = loadJobs();
+
+  let posted = 0, completed = 0, ongoing = 0;
+
+  if (role === 'client') {
+    // Client: posted = jobs they created, completed/ongoing based on status
+    const myJobs = jobs.filter(j => j.postedBy === username);
+    posted = myJobs.length;
+    completed = myJobs.filter(j => j.status === 'completed').length;
+    ongoing = myJobs.filter(j => j.status === 'in-progress').length;
+  } else {
+    // Freelancer: posted = jobs they accepted, completed/ongoing based on status
+    const accepted = jobs.filter(j => j.acceptedBy === username);
+    posted = accepted.length;
+    completed = accepted.filter(j => j.status === 'completed').length;
+    ongoing = accepted.filter(j => j.status === 'in-progress').length;
+  }
+
+  res.json({ success: true, posted, completed, ongoing });
 });
 
 // Update job details (owner only)
@@ -985,6 +1030,89 @@ app.patch('/api/notifications/read', (req, res) => {
   });
   saveNotifications(all);
   res.json({ success: true, markedRead: count });
+});
+
+// ── Feed: Freelancer sees recent open jobs ──
+app.get('/api/feed/freelancer/:username', (req, res) => {
+  const { username } = req.params;
+  const db = loadProfilesDb();
+  const user = db.users[username];
+  const jobs = loadJobs();
+
+  // Get freelancer's skills/interests for relevance sorting
+  const profile = user?.roles?.freelancer || {};
+  const skillText = `${profile.skill || ''} ${profile.tools || ''} ${profile.title || ''}`.toLowerCase();
+
+  // Show open jobs not posted by this user, newest first
+  let feed = jobs
+    .filter(j => j.status === 'open' && j.postedBy !== username)
+    .sort((a, b) => new Date(b.postedAt || 0) - new Date(a.postedAt || 0));
+
+  // Simple relevance: if user has skills, boost matching jobs to top
+  if (skillText.trim()) {
+    const words = skillText.split(/[\s,;|]+/).filter(w => w.length > 2);
+    feed.sort((a, b) => {
+      const aText = `${a.title} ${a.description} ${a.category} ${a.subcategory || ''}`.toLowerCase();
+      const bText = `${b.title} ${b.description} ${b.category} ${b.subcategory || ''}`.toLowerCase();
+      const aScore = words.filter(w => aText.includes(w)).length;
+      const bScore = words.filter(w => bText.includes(w)).length;
+      return bScore - aScore;
+    });
+  }
+
+  // Load categories for display
+  const cats = readJson(path.join(DATA_DIR, 'categories.json'), { jobCategories: [] });
+
+  res.json({ success: true, jobs: feed.slice(0, 20), categories: cats.jobCategories || [] });
+});
+
+// ── Feed: Client sees freelancer profiles matching interests ──
+app.get('/api/feed/client/:username', (req, res) => {
+  const { username } = req.params;
+  const db = loadProfilesDb();
+  const user = db.users[username];
+  const clientProfile = user?.roles?.client || {};
+  const jobs = loadJobs();
+
+  // Get client's posted job categories/keywords for matching
+  const myJobs = jobs.filter(j => j.postedBy === username);
+  const interestText = myJobs.map(j => `${j.title} ${j.description} ${j.category} ${j.subcategory || ''}`).join(' ').toLowerCase();
+  const clientTitle = (clientProfile.title || '').toLowerCase();
+  const clientBio = (clientProfile.bio || '').toLowerCase();
+  const matchText = `${interestText} ${clientTitle} ${clientBio}`;
+
+  // Collect all freelancer profiles (not the requesting user)
+  const freelancers = [];
+  for (const [uname, account] of Object.entries(db.users)) {
+    if (uname === username) continue;
+    const fp = account.roles?.freelancer;
+    if (!fp || !fp.title) continue; // skip profiles without a title set
+    
+    // Calculate relevance score
+    const fpText = `${fp.skill || ''} ${fp.tools || ''} ${fp.title || ''} ${fp.bio || ''}`.toLowerCase();
+    const words = matchText.split(/[\s,;|]+/).filter(w => w.length > 2);
+    const score = words.filter(w => fpText.includes(w)).length;
+
+    freelancers.push({
+      username: uname,
+      name: fp.name || uname,
+      title: fp.title || '',
+      bio: fp.bio || '',
+      skill: fp.skill || '',
+      tools: fp.tools || '',
+      level: fp.level || '',
+      years: fp.years || '',
+      hourly: fp.hourly || '',
+      avatarSrc: fp.avatarSrc || null,
+      location: fp.location || '',
+      score
+    });
+  }
+
+  // Sort: highest match first, then alphabetically
+  freelancers.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+
+  res.json({ success: true, freelancers: freelancers.slice(0, 20) });
 });
 
 const PORT = process.env.PORT || 3000;

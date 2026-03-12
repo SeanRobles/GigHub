@@ -1,14 +1,21 @@
-[build]s = require('fs');
-  command = "npm install && node scripts/copy-assets.js"re('path');
+[build]
+  command = "npm install && node scripts/copy-assets.js"
   publish = "html"
-  functions = "netlify/functions"function copyDirSync(src, dest) {
-c(src)) return;
-[build.environment]dest)) fs.mkdirSync(dest, { recursive: true });
-  NODE_VERSION = "18"  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
-Path = path.join(src, entry.name);
-[[redirects]]h = path.join(dest, entry.name);
-  from = "/api/*"
-  to = "/.netlify/functions/api/:splat"the junk 'gighub' subfolder if it exists
-  status = 200      if (entry.name === 'gighub' && src.endsWith('css')) continue;
-Sync(srcPath, destPath);    } else {      fs.copyFileSync(srcPath, destPath);    }  }}const root = path.join(__dirname, '..');const publishDir = path.join(root, 'html');// Copy css/ into html/css/[[redirects]]copyDirSync(path.join(root, 'css'), path.join(publishDir, 'css'));  from = "/css/*"  to = "/css/:splat"// Copy Images/ into html/Images/  status = 200copyDirSync(path.join(root, 'Images'), path.join(publishDir, 'Images'));[[redirects]]console.log('✅ Assets copied to publish directory.');  from = "/Images/*"  to = "/Images/:splat"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+function copyDirSync(src, dest) {
+  if (!fs.existsSync(src)) return;
+  dest)) fs.mkdirSync(dest, { recursive: true });
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    Path = path.join(src, entry.name);
+    [[redirects]]h = path.join(dest, entry.name);
+    from = "/api/*"
+    to = "/.netlify/functions/api/:splat"
+    the junk 'gighub' subfolder if it exists
+    status = 200
+    if (entry.name === 'gighub' && src.endsWith('css')) continue;
+    Sync(srcPath, destPath);    } else {      fs.copyFileSync(srcPath, destPath);    }  }}const root = path.join(__dirname, '..');const publishDir = path.join(root, 'html');// Copy css/ into html/css/[[redirects]]copyDirSync(path.join(root, 'css'), path.join(publishDir, 'css'));  from = "/css/*"  to = "/css/:splat"// Copy Images/ into html/Images/  status = 200copyDirSync(path.join(root, 'Images'), path.join(publishDir, 'Images'));[[redirects]]console.log('✅ Assets copied to publish directory.');  from = "/Images/*"  to = "/Images/:splat"
   status = 200

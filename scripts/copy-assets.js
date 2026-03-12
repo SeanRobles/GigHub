@@ -8,8 +8,6 @@ function copyDirSync(src, dest) {
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
     if (entry.isDirectory()) {
-      // Skip the junk 'gighub' subfolder if it exists
-      if (entry.name === 'gighub' && src.endsWith('css')) continue;
       copyDirSync(srcPath, destPath);
     } else {
       fs.copyFileSync(srcPath, destPath);
@@ -20,10 +18,7 @@ function copyDirSync(src, dest) {
 const root = path.join(__dirname, '..');
 const publishDir = path.join(root, 'html');
 
-// Copy css/ into html/css/
 copyDirSync(path.join(root, 'css'), path.join(publishDir, 'css'));
-
-// Copy Images/ into html/Images/
 copyDirSync(path.join(root, 'Images'), path.join(publishDir, 'Images'));
 
-console.log('✅ Assets copied to publish directory.');
+console.log('Assets copied to publish directory.');

@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "netlify dev",
-    "build": "echo 'No build step needed'"
+    "dev": "npx netlify dev",
+    "build": "node scripts/copy-assets.js"
   },
   "dependencies": {
+    "@netlify/blobs": "^7.0.0",
     "@netlify/functions": "^2.4.0",
     "node-fetch": "^2.7.0"
   }

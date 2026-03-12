@@ -1,2 +1,5 @@
 node_modules/
 .env
+.netlify/
+html/css/
+html/Images/

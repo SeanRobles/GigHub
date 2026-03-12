@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1773278898785",
+    "to": "asa",
+    "type": "job-completed",
+    "message": "sentientmonkey2040@gmail.com marked the job \"Data Cleaning Website\" as completed",
+    "jobId": "1773264211662",
+    "from": "sentientmonkey2040@gmail.com",
+    "read": false,
+    "timestamp": 1773278898785
+  },
+  {
+    "id": "1773279457488",
+    "to": "asa",
+    "type": "job-accepted",
+    "message": "sentientmonkey2040@gmail.com accepted your job \"dasdas\"",
+    "jobId": "1773265788827",
+    "from": "sentientmonkey2040@gmail.com",
+    "read": false,
+    "timestamp": 1773279457489
+  },
+  {
+    "id": "1773291493226",
+    "to": "asa",
+    "type": "job-accepted",
+    "message": "sentientmonkey2040@gmail.com accepted your job \"dasd\"",
+    "jobId": "1773266023005",
+    "from": "sentientmonkey2040@gmail.com",
+    "read": false,
+    "timestamp": 1773291493226
+  },
+  {
+    "id": "1773291574778",
+    "to": "asa",
+    "type": "job-completed",
+    "message": "sentientmonkey2040@gmail.com marked the job \"dasdas\" as completed",
+    "jobId": "1773265788827",
+    "from": "sentientmonkey2040@gmail.com",
+    "read": false,
+    "timestamp": 1773291574778
+  }
+]

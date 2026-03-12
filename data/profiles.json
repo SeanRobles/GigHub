@@ -6,7 +6,7 @@
       "password": "SEAnrobles457@gmail.com",
       "verified": true,
       "age": "21",
-      "currentRole": "freelancer",
+      "currentRole": "client",
       "roles": {
         "freelancer": {
           "name": "sean robles",
@@ -56,7 +56,7 @@
       "acceptedServices": [],
       "createdServices": [],
       "createdAt": "2026-03-11T20:04:41.908Z",
-      "updatedAt": "2026-03-12T01:14:07.572Z"
+      "updatedAt": "2026-03-12T04:55:55.412Z"
     },
     "sentientmonkey2040@gmail.com": {
       "username": "sentientmonkey2040@gmail.com",
@@ -114,7 +114,7 @@
       "acceptedServices": [],
       "createdServices": [],
       "createdAt": "2026-03-11T22:21:56.535Z",
-      "updatedAt": "2026-03-12T01:20:48.081Z"
+      "updatedAt": "2026-03-12T05:04:23.406Z"
     },
     "BoogieBops": {
       "username": "BoogieBops",
@@ -175,5 +175,5 @@
       "updatedAt": "2026-03-12T00:37:43.681Z"
     }
   },
-  "lastUpdated": "2026-03-12T01:20:48.081Z"
+  "lastUpdated": "2026-03-12T05:04:23.406Z"
 }

@@ -6,7 +6,7 @@
       "password": "SEAnrobles457@gmail.com",
       "verified": true,
       "age": "21",
-      "currentRole": "freelancer",
+      "currentRole": "client",
       "roles": {
         "freelancer": {
           "name": "sean robles",
@@ -56,7 +56,7 @@
       "acceptedServices": [],
       "createdServices": [],
       "createdAt": "2026-03-11T20:04:41.908Z",
-      "updatedAt": "2026-03-11T23:26:19.747Z"
+      "updatedAt": "2026-03-12T00:55:02.588Z"
     },
     "sentientmonkey2040@gmail.com": {
       "username": "sentientmonkey2040@gmail.com",
@@ -115,7 +115,65 @@
       "createdServices": [],
       "createdAt": "2026-03-11T22:21:56.535Z",
       "updatedAt": "2026-03-11T23:24:38.915Z"
+    },
+    "BoogieBops": {
+      "username": "BoogieBops",
+      "email": "JAREDBUGIA@gmail.com",
+      "password": "JAREDBUGIA@gmail.com",
+      "verified": true,
+      "age": "19",
+      "currentRole": "freelancer",
+      "roles": {
+        "freelancer": {
+          "name": "Jared Bugia",
+          "title": "",
+          "bio": "",
+          "languages": "",
+          "location": "",
+          "skill": "",
+          "tools": "",
+          "level": "",
+          "years": "",
+          "hourly": "",
+          "fixedMin": "",
+          "fixedMax": "",
+          "payment": "",
+          "degree": "",
+          "institution": "",
+          "gradYear": "",
+          "certs": "",
+          "portfolioFile": null,
+          "portfolioFileName": null,
+          "avatarSrc": null
+        },
+        "client": {
+          "name": "Jared Bugia",
+          "title": "",
+          "bio": "",
+          "languages": "",
+          "location": "",
+          "skill": "",
+          "tools": "",
+          "level": "",
+          "years": "",
+          "hourly": "",
+          "fixedMin": "",
+          "fixedMax": "",
+          "payment": "",
+          "degree": "",
+          "institution": "",
+          "gradYear": "",
+          "certs": "",
+          "portfolioFile": null,
+          "portfolioFileName": null,
+          "avatarSrc": null
+        }
+      },
+      "acceptedServices": [],
+      "createdServices": [],
+      "createdAt": "2026-03-12T00:37:43.681Z",
+      "updatedAt": "2026-03-12T00:37:43.681Z"
     }
   },
-  "lastUpdated": "2026-03-11T23:26:19.747Z"
+  "lastUpdated": "2026-03-12T00:55:02.588Z"
 }

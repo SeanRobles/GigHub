@@ -8,31 +8,64 @@
 </head>
 <body>
 
-  <div class="hero">
+  <div class="hero" style="position:relative;min-height:100vh;display:flex;flex-direction:column;overflow:hidden;">
     <!-- White top band -->
     <div class="hero__white-band"></div>
 
     <!-- Blue gradient body -->
     <div class="hero__blue"></div>
 
-    <!-- Navbar (sits inside white band visually) -->
-    <nav class="navbar">
-      <button class="navbar__join" onclick="window.location.href='signup.html'">JOIN NOW</button>
-    </nav>
+    <!-- Everything centered in the middle of the viewport -->
+    <div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;z-index:5;">
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;width:100%;text-align:center;">
 
-    <!-- Brand: logo + name straddling the white/blue divide -->
-    <div class="brand">
-      <img
-        src="../Images/GIGHUBLOGO ONLY.PNG"
-        alt="GigHub Logo"
-        class="brand__logo"
-        id="brandLogo"
-        onerror="GigHub.useFallbackLogo()"
-      />
-      <span class="brand__name">GigHub</span>
+        <!-- Logo + Name -->
+        <a href="#" id="logoLink" style="display:flex;flex-direction:column;align-items:center;text-decoration:none;color:inherit;cursor:pointer;gap:16px;">
+          <img
+            src="../Images/GIGHUBLOGO ONLY.PNG"
+            alt="GigHub Logo"
+            class="brand__logo"
+            id="brandLogo"
+            onerror="GigHub.useFallbackLogo()"
+            style="display:block;width:320px;max-width:80vw;height:auto;margin:0 auto;"
+          />
+          <span class="brand__name" style="display:block;text-align:center;font-size:3rem;">GigHub</span>
+        </a>
+
+        <!-- Join Now button -->
+        <button onclick="window.location.href='signup.html'"
+          style="
+            padding:14px 48px;
+            font-size:1.1rem;
+            font-weight:700;
+            font-family:Poppins,sans-serif;
+            border-radius:999px;
+            cursor:pointer;
+            border:none;
+            background:linear-gradient(135deg,#00c8f0,#1b3d7a);
+            color:#fff;
+            box-shadow:0 4px 20px rgba(0,200,240,0.35);
+            letter-spacing:1px;
+            margin:0 auto;
+            display:block;
+          ">
+          JOIN NOW
+        </button>
+
+      </div>
     </div>
   </div>
 
   <script src="gighub.js"></script>
+  <script>
+    document.getElementById('logoLink').addEventListener('click', function(e) {
+      e.preventDefault();
+      if (localStorage.getItem('gighub_user')) {
+        window.location.href = 'dashboard.html';
+      } else {
+        window.location.href = 'LandingPage.html';
+      }
+    });
+  </script>
 </body>
 </html>

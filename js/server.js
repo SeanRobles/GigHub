@@ -19,6 +19,7 @@ const SERVICES_FILE = path.join(DATA_DIR, 'services.json');
 const MESSAGES_FILE = path.join(DATA_DIR, 'messages.json');
 const JOBS_FILE = path.join(DATA_DIR, 'jobs.json');
 const CATEGORIES_FILE = path.join(DATA_DIR, 'categories.json');
+const REVIEWS_FILE = path.join(ROOT_DIR, 'data', 'reviews.json');
 
 const EMAILJS_SERVICE_ID = process.env.EMAILJS_SERVICE_ID || 'service_1l0xsny';
 const EMAILJS_PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY || process.env.EMAILJS_USER_ID || '';
@@ -114,8 +115,8 @@ function normalizeProfilesDb(rawDb) {
       password: value.password || '',
       currentRole: role,
       roles: {
-        freelancer: role === 'freelancer' ? { ...defaultRoleProfile(displayName), ...value } : defaultRoleProfile(displayName),
-        client: role === 'client' ? { ...defaultRoleProfile(displayName), ...value } : defaultRoleProfile(displayName)
+        freelancer: defaultRoleProfile(displayName),
+        client: defaultRoleProfile(displayName)
       },
       acceptedServices: Array.isArray(value.acceptedServices) ? value.acceptedServices : [],
       createdServices: Array.isArray(value.createdServices) ? value.createdServices : [],
@@ -471,22 +472,26 @@ app.get('/api/profiles', (req, res) => {
   res.json({ success: true, users: Object.values(db.users).map(sanitizeUser), lastUpdated: db.lastUpdated });
 });
 
+// Save profile for a specific role
 app.post('/api/profiles/save', (req, res) => {
   const { username, role, profile } = req.body;
   if (!username || !role || !profile) {
-    return res.status(400).json({ success: false, message: 'Username, role, and profile are required.' });
+    return res.status(400).json({ success: false, message: 'username, role, and profile are required.' });
   }
 
-  const db = loadProfilesDb();
-  const user = db.users[username];
+  const profiles = readJSON(PROFILES_FILE);
+  const user = profiles.users?.[username];
   if (!user) {
     return res.status(404).json({ success: false, message: 'User not found.' });
   }
 
-  user.roles[role] = { ...defaultRoleProfile(profile.name || user.username), ...profile };
+  if (!user.roles) user.roles = {};
+  user.roles[role] = { ...user.roles[role], ...profile };
   user.updatedAt = isoNow();
-  saveProfilesDb(db);
-  res.json({ success: true, message: 'Profile saved.', user: sanitizeUser(user) });
+  profiles.lastUpdated = isoNow();
+
+  writeJSON(PROFILES_FILE, profiles);
+  res.json({ success: true, user, message: 'Profile saved.' });
 });
 
 app.get('/api/services', (req, res) => {
@@ -832,6 +837,85 @@ app.get('/api/freelancers/by-category/:category', (req, res) => {
   }
   
   res.json({ success: true, freelancers: matchingFreelancers });
+});
+
+/* ══════════════════════════════════════════
+   REVIEWS
+   ══════════════════════════════════════════ */
+
+function readReviews() {
+  try {
+    if (!fs.existsSync(REVIEWS_FILE)) fs.writeFileSync(REVIEWS_FILE, '[]', 'utf8');
+    return JSON.parse(fs.readFileSync(REVIEWS_FILE, 'utf8'));
+  } catch (e) {
+    console.error('Error reading reviews:', e);
+    return [];
+  }
+}
+
+function writeReviews(reviews) {
+  fs.writeFileSync(REVIEWS_FILE, JSON.stringify(reviews, null, 2), 'utf8');
+}
+
+// GET reviews for a user
+app.get('/api/reviews/:username', (req, res) => {
+  const username = decodeURIComponent(req.params.username);
+  const allReviews = readReviews();
+  const userReviews = allReviews.filter(r => r.to === username);
+  userReviews.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  res.json({ success: true, reviews: userReviews });
+});
+
+// POST a new review (or update existing)
+app.post('/api/reviews', (req, res) => {
+  const { from, to, rating, text } = req.body;
+
+  if (!from || !to || !rating) {
+    return res.status(400).json({ success: false, message: 'from, to, and rating are required.' });
+  }
+  if (from === to) {
+    return res.status(400).json({ success: false, message: 'You cannot review yourself.' });
+  }
+  if (rating < 1 || rating > 5) {
+    return res.status(400).json({ success: false, message: 'Rating must be between 1 and 5.' });
+  }
+
+  const allReviews = readReviews();
+  const existingIdx = allReviews.findIndex(r => r.from === from && r.to === to);
+
+  const reviewObj = {
+    id: Date.now().toString(),
+    from,
+    to,
+    rating: parseInt(rating),
+    text: text || '',
+    timestamp: Date.now()
+  };
+
+  if (existingIdx >= 0) {
+    reviewObj.id = allReviews[existingIdx].id;
+    allReviews[existingIdx] = reviewObj;
+  } else {
+    allReviews.push(reviewObj);
+  }
+
+  writeReviews(allReviews);
+  res.json({ success: true, review: reviewObj, message: existingIdx >= 0 ? 'Review updated.' : 'Review submitted.' });
+});
+
+// DELETE a review
+app.delete('/api/reviews/:reviewId', (req, res) => {
+  const reviewId = req.params.reviewId;
+  const { username } = req.body;
+  let allReviews = readReviews();
+  const review = allReviews.find(r => r.id === reviewId);
+
+  if (!review) return res.status(404).json({ success: false, message: 'Review not found.' });
+  if (review.from !== username) return res.status(403).json({ success: false, message: 'You can only delete your own reviews.' });
+
+  allReviews = allReviews.filter(r => r.id !== reviewId);
+  writeReviews(allReviews);
+  res.json({ success: true, message: 'Review deleted.' });
 });
 
 const PORT = process.env.PORT || 3000;

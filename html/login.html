@@ -25,26 +25,23 @@
 
         <!-- Logo -->
         <img
-          src="GIGHUBLOGO ONLY.PNG"
+          src="../Images/GIGHUBLOGO ONLY.PNG"
           alt="GigHub"
           class="login-card__logo"
+          style="display:block;margin:0 auto 16px;"
           onerror="this.style.display='none';document.getElementById('logo-fb').style.display='flex';"
         />
         <!-- SVG fallback -->
-        <div id="logo-fb" class="login-card__logo-fb" style="display:none;">
+        <div id="logo-fb" class="login-card__logo-fb" style="display:none;justify-content:center;align-items:center;margin:0 auto 16px;">
           <svg width="110" height="110" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="40" cy="40" r="37" fill="#e8f5fb" stroke="#3185a8" stroke-width="2.5"/>
-            <!-- Gear / world arcs -->
             <ellipse cx="40" cy="44" rx="22" ry="14" fill="none" stroke="#3185a8" stroke-width="2"/>
             <ellipse cx="40" cy="44" rx="10" ry="14" fill="none" stroke="#3185a8" stroke-width="1.5"/>
             <line x1="18" y1="44" x2="62" y2="44" stroke="#3185a8" stroke-width="1.5"/>
-            <!-- Sparkle dots -->
             <circle cx="18" cy="22" r="2" fill="#f5a623"/>
             <circle cx="62" cy="22" r="2" fill="#f5a623"/>
             <circle cx="40" cy="8"  r="2" fill="#f5a623"/>
-            <!-- Star -->
             <polygon points="40,14 43.8,25.5 56,25.5 46.2,32.5 50,44 40,37 30,44 33.8,32.5 24,25.5 36.2,25.5" fill="#f5a623"/>
-            <!-- Person icon on star -->
             <circle cx="40" cy="31" r="3.5" fill="#fff"/>
             <path d="M33.5 40 Q40 35.5 46.5 40" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
           </svg>
@@ -69,13 +66,13 @@
         </div>
 
         <!-- Error -->
-        <p class="login-error" id="loginError">Incorrect username or password.</p>
+        <p class="login-error" id="loginError" style="text-align:center;">Incorrect username or password.</p>
 
         <!-- Forgot password -->
-        <a href="forgot-password.html" class="login-forgot">Forgot Password?</a>
+        <a href="forgot-password.html" class="login-forgot" style="display:block;text-align:center;">Forgot Password?</a>
 
         <!-- Sign In button -->
-        <button class="login-btn" onclick="handleLogin()">Sign In</button>
+        <button class="login-btn" onclick="handleLogin()" style="display:block;margin:16px auto 0;width:100%;">Sign In</button>
 
       </div>
     </div>

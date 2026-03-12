@@ -21,7 +21,7 @@ if (!localStorage.getItem('gighub_user')) {
        ═══════════════════════════════════════════ --->
   <aside class="dash-sidebar" id="sidebar">
 
-    <div class="dash-sidebar__brand">
+    <div class="dash-sidebar__brand" style="cursor:pointer;" onclick="document.querySelector('[data-page=dashboard]').click();">
       <img src="../Images/GIGHUBLOGO ONLY.PNG" alt="GigHub" class="dash-sidebar__logo"
         onerror="this.style.display='none';document.getElementById('sb-fb').style.display='flex';"/>
       <div id="sb-fb" class="dash-sidebar__logo-fb" style="display:none;">
@@ -231,42 +231,16 @@ if (!localStorage.getItem('gighub_user')) {
               </div>
             </div>
 
-            <!-- RIGHT: Reviews from Freelancers -->
+            <!-- RIGHT: Reviews -->
             <div class="profile-panel">
               <div class="profile-panel__header">
-                <span class="profile-panel__title">Reviews from Freelancers</span>
-                <div class="profile-panel__badge">⭐ 4.9</div>
+                <span class="profile-panel__title">Reviews</span>
+                <div class="profile-panel__badge" id="profileAvgBadge">⭐ —</div>
               </div>
               <div class="profile-panel__body">
-                <div class="review-item">
-                  <div class="review-avatar">M</div>
-                  <div>
-                    <div class="review-text">Absolutely blown away by the quality of work. I hired a freelancer for a logo redesign and got the final files within 48 hours. Communication was smooth the…</div>
-                    <div class="review-stars">★★★★☆</div>
-                  </div>
+                <div id="profileReviewsList">
+                  <div style="text-align:center;color:#aab5c0;font-size:0.82rem;padding:20px 0;font-family:Poppins,sans-serif;">No reviews yet. Reviews from other users will appear here.</div>
                 </div>
-                <div class="review-item">
-                  <div class="review-avatar" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">A</div>
-                  <div>
-                    <div class="review-text">I was skeptical at first, but this platform completely changed how I outsource work. Found a web developer who understood my vision…</div>
-                    <div class="review-stars">★★★☆☆</div>
-                  </div>
-                </div>
-                <div class="review-item">
-                  <div class="review-avatar" style="background:linear-gradient(135deg,#0ea5e9,#38bdf8)">R</div>
-                  <div>
-                    <div class="review-text">Great experience overall. The freelancer I worked with was professional and talented. Only minor issue was a small delay on the first draft, but they…</div>
-                    <div class="review-stars">★★★★☆</div>
-                  </div>
-                </div>
-                <div class="review-item">
-                  <div class="review-avatar" style="background:linear-gradient(135deg,#16a34a,#4ade80)">L</div>
-                  <div>
-                    <div class="review-text">I've tried other freelance platforms before and nothing compares. The talent here is seriously top-tier. My content writer nailed the brand voice on the…</div>
-                    <div class="review-stars">★★★★☆</div>
-                  </div>
-                </div>
-                <div class="reviews-viewall">View All</div>
               </div>
             </div>
 
@@ -407,10 +381,15 @@ if (!localStorage.getItem('gighub_user')) {
               <div id="chatAvatarHeader" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1b3d7a,#2563eb);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.85rem;font-family:Poppins,sans-serif;flex-shrink:0;">
                 ?
               </div>
-              <div>
+              <div style="flex:1;">
                 <div id="chatPartnerName" style="font-weight:700;font-size:0.95rem;color:#1a2a3a;font-family:Poppins,sans-serif;"></div>
                 <div id="chatPartnerStatus" style="font-size:0.72rem;color:#7a8fa0;font-family:Poppins,sans-serif;">Select a conversation</div>
               </div>
+              <!-- View Profile Button -->
+              <button id="viewPartnerProfileBtn" onclick="togglePartnerProfile()" style="display:none;align-items:center;gap:6px;border:1.5px solid #1b3d7a;background:#fff;color:#1b3d7a;font-family:Poppins,sans-serif;font-weight:600;font-size:0.72rem;border-radius:999px;padding:6px 14px;cursor:pointer;transition:all 0.2s;white-space:nowrap;" onmouseover="this.style.background='#1b3d7a';this.style.color='#fff'" onmouseout="this.style.background='#fff';this.style.color='#1b3d7a'">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                View Profile
+              </button>
             </div>
 
             <!-- Messages Container -->
@@ -432,6 +411,79 @@ if (!localStorage.getItem('gighub_user')) {
               </button>
             </form>
           </div>
+
+          <!-- Partner Profile Sidebar (hidden by default) -->
+          <div id="partnerProfilePanel" style="width:0;overflow:hidden;border-left:0;background:#f8fafc;display:flex;flex-direction:column;transition:width 0.3s ease, border-left 0.3s ease, padding 0.3s ease;">
+            <div id="partnerProfileContent" style="width:280px;padding:0;display:flex;flex-direction:column;gap:0;overflow-y:auto;">
+              
+              <!-- Profile Header -->
+              <div style="padding:22px 20px 16px;border-bottom:1.5px solid #e8eff6;text-align:center;">
+                <div id="ppAvatar" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#1b3d7a,#2563eb);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.4rem;font-family:Poppins,sans-serif;margin:0 auto 10px;"></div>
+                <div id="ppName" style="font-weight:700;font-size:1rem;color:#1a2a3a;font-family:Poppins,sans-serif;"></div>
+                <div id="ppTitle" style="font-size:0.75rem;color:#7a8fa0;font-family:Poppins,sans-serif;margin-top:2px;"></div>
+                <button onclick="togglePartnerProfile()" style="margin-top:10px;background:none;border:1.5px solid #dce4ef;border-radius:999px;padding:5px 14px;font-family:Poppins,sans-serif;font-size:0.7rem;font-weight:600;color:#7a8fa0;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='#ef4444';this.style.color='#ef4444'" onmouseout="this.style.borderColor='#dce4ef';this.style.color='#7a8fa0'">✕ Close</button>
+              </div>
+
+              <!-- Skills Info -->
+              <div style="padding:18px 20px;border-bottom:1.5px solid #e8eff6;">
+                <div style="font-weight:700;font-size:0.8rem;color:#1b3d7a;font-family:Poppins,sans-serif;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.06em;">Skills & Expertise</div>
+                
+                <div style="margin-bottom:12px;">
+                  <div style="font-size:0.68rem;font-weight:600;color:#8a9baa;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Primary Skill</div>
+                  <div id="ppSkill" style="font-size:0.82rem;font-weight:600;color:#1a2a3a;font-family:Poppins,sans-serif;background:#f0f4fb;border-radius:8px;padding:8px 12px;">—</div>
+                </div>
+
+                <div style="margin-bottom:12px;">
+                  <div style="font-size:0.68rem;font-weight:600;color:#8a9baa;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Frequently Used Tools</div>
+                  <div id="ppTools" style="font-size:0.82rem;font-weight:600;color:#1a2a3a;font-family:Poppins,sans-serif;background:#f0f4fb;border-radius:8px;padding:8px 12px;">—</div>
+                </div>
+
+                <div style="margin-bottom:12px;">
+                  <div style="font-size:0.68rem;font-weight:600;color:#8a9baa;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Skill Proficiency Level</div>
+                  <div id="ppLevel" style="font-size:0.82rem;font-weight:600;color:#1a2a3a;font-family:Poppins,sans-serif;background:#f0f4fb;border-radius:8px;padding:8px 12px;">—</div>
+                </div>
+
+                <div>
+                  <div style="font-size:0.68rem;font-weight:600;color:#8a9baa;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;">Years of Experience</div>
+                  <div id="ppYears" style="font-size:0.82rem;font-weight:600;color:#1a2a3a;font-family:Poppins,sans-serif;background:#f0f4fb;border-radius:8px;padding:8px 12px;">—</div>
+                </div>
+              </div>
+
+              <!-- Rating Section -->
+              <div style="padding:18px 20px;border-bottom:1.5px solid #e8eff6;">
+                <div style="font-weight:700;font-size:0.8rem;color:#1b3d7a;font-family:Poppins,sans-serif;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">Average Rating</div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+                  <div id="ppAvgRating" style="font-size:1.6rem;font-weight:800;color:#f5a623;font-family:Poppins,sans-serif;">—</div>
+                  <div id="ppAvgStars" style="font-size:1.1rem;color:#f5a623;letter-spacing:2px;">☆☆☆☆☆</div>
+                  <div id="ppRatingCount" style="font-size:0.7rem;color:#8a9baa;font-family:Poppins,sans-serif;">(0 reviews)</div>
+                </div>
+
+                <!-- Your Rating -->
+                <div style="background:#f7fbff;border-radius:12px;padding:14px 16px;">
+                  <div style="font-size:0.72rem;font-weight:600;color:#5a6a7a;margin-bottom:8px;font-family:Poppins,sans-serif;">Your Rating</div>
+                  <div id="ppStarPicker" style="display:flex;gap:4px;margin-bottom:10px;">
+                    <span class="star-pick" data-star="1" onclick="pickStar(1)" style="font-size:1.6rem;cursor:pointer;color:#dce4ef;transition:color 0.15s;">★</span>
+                    <span class="star-pick" data-star="2" onclick="pickStar(2)" style="font-size:1.6rem;cursor:pointer;color:#dce4ef;transition:color 0.15s;">★</span>
+                    <span class="star-pick" data-star="3" onclick="pickStar(3)" style="font-size:1.6rem;cursor:pointer;color:#dce4ef;transition:color 0.15s;">★</span>
+                    <span class="star-pick" data-star="4" onclick="pickStar(4)" style="font-size:1.6rem;cursor:pointer;color:#dce4ef;transition:color 0.15s;">★</span>
+                    <span class="star-pick" data-star="5" onclick="pickStar(5)" style="font-size:1.6rem;cursor:pointer;color:#dce4ef;transition:color 0.15s;">★</span>
+                  </div>
+                  <textarea id="ppReviewText" placeholder="Write a short review (optional)…" style="width:100%;border:1.5px solid #dce4ef;border-radius:8px;padding:8px 12px;font-family:Poppins,sans-serif;font-size:0.78rem;outline:none;resize:vertical;min-height:60px;transition:border-color 0.2s;" onfocus="this.style.borderColor='#1b3d7a'" onblur="this.style.borderColor='#dce4ef'"></textarea>
+                  <button onclick="submitReview()" style="margin-top:8px;width:100%;padding:9px;background:linear-gradient(135deg,#1b3d7a,#2563eb);color:#fff;border:none;border-radius:999px;font-family:Poppins,sans-serif;font-weight:700;font-size:0.75rem;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;box-shadow:0 2px 10px rgba(27,61,122,0.25);transition:opacity 0.2s;" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">Submit Review</button>
+                </div>
+              </div>
+
+              <!-- Reviews List -->
+              <div style="padding:18px 20px;">
+                <div style="font-weight:700;font-size:0.8rem;color:#1b3d7a;font-family:Poppins,sans-serif;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.06em;">Reviews</div>
+                <div id="ppReviewsList" style="display:flex;flex-direction:column;gap:10px;">
+                  <div style="text-align:center;color:#aab5c0;font-size:0.78rem;padding:16px 0;font-family:Poppins,sans-serif;">No reviews yet</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -617,33 +669,35 @@ if (!localStorage.getItem('gighub_user')) {
 
     currentUser = sessionUser;
 
+    // Load user data from server first
     try {
-      const [userRes, catRes] = await Promise.all([
-        fetch(`${API_BASE}/users/${encodeURIComponent(currentUser)}`),
-        fetch(`${API_BASE}/categories`)
-      ]);
+      const res = await fetch(`${API_BASE}/users/${encodeURIComponent(currentUser)}`);
+      const data = await res.json();
+      if (data.success && data.user) {
+        account = data.user;
+        currentRole = account.currentRole || 'freelancer';
+        pendingRole = currentRole;
 
-      const userData = await userRes.json();
-      const catData = await catRes.json();
+        // Load both role profiles from server — preserve both
+        if (account.roles?.freelancer) {
+          profiles.freelancer = { ...profiles.freelancer, ...account.roles.freelancer };
+        }
+        if (account.roles?.client) {
+          profiles.client = { ...profiles.client, ...account.roles.client };
+        }
 
-      if (!userRes.ok || !userData.success) {
-        throw new Error(userData.message || 'Could not load your account.');
+        // Populate settings fields
+        const settingsEmail = document.getElementById('settingsEmail');
+        if (settingsEmail) settingsEmail.value = account.email || '';
       }
+    } catch (err) {
+      console.error('Error loading user data:', err);
+    }
 
-      account = userData.user;
-      profiles = account.roles;
-      currentRole = account.currentRole || 'freelancer';
-      pendingRole = currentRole;
-      categories = catData.success ? catData.categories : [];
-      document.querySelector('.dash-topbar__username').textContent = account.username;
-      
-      // Load jobs based on role
+    try {
       await loadJobsForRole();
     } catch (err) {
-      console.error('Failed to load initial data:', err);
-      localStorage.removeItem('gighub_user');
-      window.location.href = 'login.html';
-      return;
+      console.error('Error loading jobs:', err);
     }
 
     renderProfile();
@@ -690,6 +744,11 @@ if (!localStorage.getItem('gighub_user')) {
     document.getElementById('roleOptFreelancer').classList.toggle('selected', r === 'freelancer');
   }
   function confirmRole() {
+    // Save current profile data BEFORE switching
+    if (isEditingProfile) {
+      exitProfileEdit();
+    }
+
     currentRole = pendingRole;
     document.getElementById('roleModalOverlay').classList.remove('active');
     applyTheme(currentRole);
@@ -699,15 +758,12 @@ if (!localStorage.getItem('gighub_user')) {
     // Reset filter and reload jobs for new role
     activeJobFilter = 'all';
     loadJobsForRole().then(() => {
-      renderJobs(activeJobFilter);
-      // Reset filter buttons
-      document.querySelectorAll('.services-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.services-tab')[0]?.classList.add('active');
     }).catch(err => {
       console.error('Error loading jobs after role change:', err);
     });
     
-    // If profile page is open, re-render for new role
+    // Re-render profile for the NEW role (using its own saved data)
     if (document.getElementById('page-profile').style.display !== 'none') renderProfile();
   }
   document.getElementById('roleModalOverlay').addEventListener('click', function(e) {
@@ -778,6 +834,55 @@ if (!localStorage.getItem('gighub_user')) {
 
     /* Portfolio */
     updatePortfolioUI(p);
+
+    /* Load real reviews */
+    loadProfileReviews();
+  }
+
+  async function loadProfileReviews() {
+    try {
+      const res = await fetch(`${API_BASE}/reviews/${encodeURIComponent(currentUser)}`);
+      if (!res.ok) {
+        console.error('Reviews endpoint returned', res.status);
+        return;
+      }
+      const text = await res.text();
+      let data;
+      try { data = JSON.parse(text); } catch (e) {
+        console.error('Failed to parse reviews response:', text);
+        return;
+      }
+      const reviews = data.success ? (data.reviews || []) : [];
+
+      const badge = document.getElementById('profileAvgBadge');
+      const listEl = document.getElementById('profileReviewsList');
+
+      if (reviews.length === 0) {
+        badge.textContent = '⭐ —';
+        listEl.innerHTML = '<div style="text-align:center;color:#aab5c0;font-size:0.82rem;padding:20px 0;font-family:Poppins,sans-serif;">No reviews yet. Reviews from other users will appear here.</div>';
+        return;
+      }
+
+      const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+      badge.textContent = `⭐ ${avg.toFixed(1)}`;
+
+      listEl.innerHTML = reviews.map(r => {
+        const initial = r.from.charAt(0).toUpperCase();
+        const stars = renderStarString(r.rating);
+        return `
+          <div class="review-item">
+            <div class="review-avatar">${initial}</div>
+            <div>
+              <div style="font-size:0.78rem;font-weight:700;color:#1a2a3a;margin-bottom:2px;">${r.from}</div>
+              <div class="review-text">${r.text || 'No comment.'}</div>
+              <div class="review-stars">${stars}</div>
+            </div>
+          </div>`;
+      }).join('');
+
+    } catch (err) {
+      console.error('Error loading profile reviews:', err);
+    }
   }
 
   /* Toggle edit / save */
@@ -794,11 +899,18 @@ if (!localStorage.getItem('gighub_user')) {
     const btn = document.getElementById('editProfileBtn');
     btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Save`;
 
-    /* Make all profile fields editable */
+    /* Make all profile fields editable + add visual edit indicator */
     const fields = ['pfSkill','pfTools','pfLevel','pfYears','pfHourly','pfFixedMin','pfFixedMax','pfPayment','pfDegree','pfInstitution','pfGradYear','pfCerts'];
     fields.forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.removeAttribute('readonly');
+      if (el) {
+        el.removeAttribute('readonly');
+        el.style.background = '#f7fbff';
+        el.style.border = '1.5px solid #1b3d7a';
+        el.style.boxShadow = '0 0 0 2px rgba(27,61,122,0.08)';
+        el.style.cursor = 'text';
+        if (!el.placeholder || el.placeholder === '') el.placeholder = 'Click to edit…';
+      }
     });
 
     /* Swap hero display elements to inputs */
@@ -806,6 +918,18 @@ if (!localStorage.getItem('gighub_user')) {
     replaceWithInput('profileTitleDisplay', 'pf-edit-title', profiles[currentRole].title,     '0.8rem','400');
     replaceWithInput('profileBioDisplay',   'pf-edit-bio',   profiles[currentRole].bio,       '0.84rem','400', true);
     replaceWithInput('profileMetaDisplay',  'pf-edit-meta',  profiles[currentRole].languages + '\n' + profiles[currentRole].location, '0.8rem','400', true);
+
+    /* Show edit mode banner */
+    let banner = document.getElementById('editModeBanner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'editModeBanner';
+      banner.style.cssText = 'background:linear-gradient(135deg,#1b3d7a,#2563eb);color:#fff;padding:10px 20px;border-radius:10px;font-family:Poppins,sans-serif;font-size:0.82rem;font-weight:600;text-align:center;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;';
+      banner.innerHTML = '✏️ <span>Edit Mode — All highlighted fields are editable. Click Save when done.</span>';
+      const profilePage = document.getElementById('profilePage');
+      if (profilePage) profilePage.insertBefore(banner, profilePage.firstChild);
+    }
+    banner.style.display = 'flex';
   }
 
   function saveProfileEdit() {
@@ -834,53 +958,42 @@ if (!localStorage.getItem('gighub_user')) {
     const gradYear    = document.getElementById('pfGradYear').value.trim();
     const certs       = document.getElementById('pfCerts').value.trim();
 
-    /* Validate all fields are filled */
-    const errors = [];
-    if (!name) errors.push('Name is required');
-    if (!title) errors.push('Title/Role is required');
-    if (!bio) errors.push('Bio is required');
-    if (!languages) errors.push('Languages are required');
-    if (!location) errors.push('Location is required');
-    if (!skill) errors.push('Primary skill is required');
-    if (!tools) errors.push('Tools are required');
-    if (!level) errors.push('Proficiency level is required');
-    if (!years) errors.push('Years of experience are required');
-    if (!payment) errors.push('Preferred payment method is required');
-    if (!degree) errors.push('Degree is required');
-    if (!institution) errors.push('Institution is required');
-    if (!gradYear) errors.push('Graduation year is required');
-    if (!certs) errors.push('Certifications are required');
-
-    if (errors.length > 0) {
-      alert('Please fill in all fields before saving:\n\n• ' + errors.join('\n• '));
+    /* Only validate the essentials — allow partial saves */
+    if (!name) {
+      alert('Name is required.');
       return;
     }
 
-    /* Save validated data */
+    /* Save all data */
     p.name       = name;
-    p.title      = title;
-    p.bio        = bio;
-    p.languages  = languages;
-    p.location   = location;
-    p.skill      = skill;
-    p.tools      = tools;
-    p.level      = level;
-    p.years      = years;
-    p.hourly     = hourly;
-    p.fixedMin   = fixedMin;
-    p.fixedMax   = fixedMax;
-    p.payment    = payment;
-    p.degree     = degree;
-    p.institution = institution;
-    p.gradYear   = gradYear;
-    p.certs      = certs;
+    p.title      = title || '';
+    p.bio        = bio || '';
+    p.languages  = languages || '';
+    p.location   = location || '';
+    p.skill      = skill || '';
+    p.tools      = tools || '';
+    p.level      = level || '';
+    p.years      = years || '';
+    p.hourly     = hourly || '';
+    p.fixedMin   = fixedMin || '';
+    p.fixedMax   = fixedMax || '';
+    p.payment    = payment || '';
+    p.degree     = degree || '';
+    p.institution = institution || '';
+    p.gradYear   = gradYear || '';
+    p.certs      = certs || '';
 
-    /* Sync to database */
-    syncProfileToDatabase();
+    /* Sync to database (fire and forget — no await needed) */
+    syncProfileToDatabase().then(saved => {
+      if (saved) {
+        showToast('✅ Profile saved successfully!', 'success');
+      } else {
+        showToast('⚠️ Profile saved locally but failed to sync to server.', 'warning');
+      }
+    });
 
     exitProfileEdit();
     renderProfile();
-    alert('Profile saved successfully!');
   }
 
   function exitProfileEdit() {
@@ -888,37 +1001,32 @@ if (!localStorage.getItem('gighub_user')) {
     const btn = document.getElementById('editProfileBtn');
     if (btn) btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Edit`;
     const fields = ['pfSkill','pfTools','pfLevel','pfYears','pfHourly','pfFixedMin','pfFixedMax','pfPayment','pfDegree','pfInstitution','pfGradYear','pfCerts'];
-    fields.forEach(id => { const el = document.getElementById(id); if(el) el.setAttribute('readonly',''); });
-  }
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.setAttribute('readonly', '');
+        el.style.background = '';
+        el.style.border = '';
+        el.style.boxShadow = '';
+        el.style.cursor = '';
+      }
+    });
 
-  function replaceWithInput(displayId, inputId, value, fontSize, fontWeight, isTextarea) {
-    const el = document.getElementById(displayId);
-    if (!el) return;
-    const tag = isTextarea ? 'textarea' : 'input';
-    const style = `font-family:Poppins,sans-serif;font-size:${fontSize};font-weight:${fontWeight};color:#1a2a3a;background:#f7fbff;border:1.5px solid #c8daf0;border-radius:8px;padding:6px 10px;width:100%;outline:none;resize:vertical;`;
-    el.style.display = 'none';
-    const wrapper = document.createElement('div');
-    wrapper.id = inputId + '-wrap';
-    const input = document.createElement(tag);
-    input.id = inputId;
-    input.value = value;
-    input.style.cssText = style;
-    if (isTextarea) input.rows = 3;
-    wrapper.appendChild(input);
-    el.parentNode.insertBefore(wrapper, el.nextSibling);
-  }
-
-  function getEditVal(inputId, fallbackId) {
-    const input = document.getElementById(inputId);
-    const wrap  = document.getElementById(inputId + '-wrap');
-    if (input) {
-      const val = input.value;
+    /* Remove edit wrappers */
+    ['pf-edit-name-wrap','pf-edit-title-wrap','pf-edit-bio-wrap','pf-edit-meta-wrap'].forEach(wid => {
+      const wrap = document.getElementById(wid);
       if (wrap) wrap.remove();
-      const display = document.getElementById(fallbackId);
-      if (display) display.style.display = '';
-      return val;
-    }
-    return document.getElementById(fallbackId)?.textContent || '';
+    });
+
+    /* Restore display elements */
+    ['profileNameDisplay','profileTitleDisplay','profileBioDisplay','profileMetaDisplay'].forEach(did => {
+      const el = document.getElementById(did);
+      if (el) el.style.display = '';
+    });
+
+    /* Hide edit banner */
+    const banner = document.getElementById('editModeBanner');
+    if (banner) banner.style.display = 'none';
   }
 
   /* ── Avatar upload ───────────────────────── */
@@ -987,26 +1095,29 @@ if (!localStorage.getItem('gighub_user')) {
      User profiles automatically sync to JSON
      ══════════════════════════════════════════ */
   async function syncProfileToDatabase() {
-    const profileData = {
-      username: currentUser,
-      role: currentRole,
-      profile: profiles[currentRole]
-    };
+    const profileData = { ...profiles[currentRole] };
 
     try {
-      const response = await fetch(`${API_BASE}/profiles/save`, {
+      const res = await fetch(`${API_BASE}/profiles/save`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profileData)
+        body: JSON.stringify({
+          username: currentUser,
+          role: currentRole,
+          profile: profileData
+        })
       });
-      const data = await response.json();
-      if (data.success) {
-        account = data.user;
-        profiles = account.roles;
-        console.log('Profile synced to database');
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        console.error('Failed to sync profile:', data.message);
+        return false;
       }
+      console.log('✅ Profile synced for role:', currentRole);
+      if (data.user) account = data.user;
+      return true;
     } catch (err) {
-      console.error('API Error saving profile:', err);
+      console.error('Error syncing profile:', err);
+      return false;
     }
   }
 
@@ -1412,7 +1523,268 @@ if (!localStorage.getItem('gighub_user')) {
     }
   });
 
-let chatPartner = '';          // current chat partner
+let chatPartner = '';
+let partnerProfileOpen = false;
+let selectedStarRating = 0;
+
+// Toggle partner profile sidebar
+function togglePartnerProfile() {
+  const panel = document.getElementById('partnerProfilePanel');
+  partnerProfileOpen = !partnerProfileOpen;
+
+  if (partnerProfileOpen && chatPartner) {
+    panel.style.width = '280px';
+    panel.style.borderLeft = '1.5px solid #e8eff6';
+    loadPartnerProfile(chatPartner);
+  } else {
+    panel.style.width = '0';
+    panel.style.borderLeft = '0';
+    partnerProfileOpen = false;
+  }
+}
+
+// Load partner's profile data
+async function loadPartnerProfile(username) {
+  try {
+    const panel = document.getElementById('partnerProfilePanel');
+    panel.style.width = '280px';
+    panel.style.borderLeft = '1.5px solid #e8eff6';
+
+    const res = await fetch(`${API_BASE}/users/${encodeURIComponent(username)}`);
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch(e) { console.error('Bad JSON from user endpoint:', text); return; }
+
+    const initial = username.charAt(0).toUpperCase();
+    document.getElementById('ppAvatar').textContent = initial;
+    document.getElementById('ppName').textContent = username;
+
+    if (data.success && data.user) {
+      const user = data.user;
+      const roleData = user.roles?.freelancer || user.roles?.client || {};
+
+      document.getElementById('ppTitle').textContent = roleData.title || 'GigHub User';
+      document.getElementById('ppSkill').textContent = roleData.skill || 'Not specified';
+      document.getElementById('ppTools').textContent = roleData.tools || 'Not specified';
+      document.getElementById('ppLevel').textContent = roleData.level || 'Not specified';
+      document.getElementById('ppYears').textContent = roleData.years ? (roleData.years + ' years') : 'Not specified';
+
+      if (roleData.avatarSrc) {
+        document.getElementById('ppAvatar').innerHTML = `<img src="${roleData.avatarSrc}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+      }
+    } else {
+      document.getElementById('ppTitle').textContent = 'GigHub User';
+      document.getElementById('ppSkill').textContent = 'Not specified';
+      document.getElementById('ppTools').textContent = 'Not specified';
+      document.getElementById('ppLevel').textContent = 'Not specified';
+      document.getElementById('ppYears').textContent = 'Not specified';
+    }
+
+    // Load reviews for this user
+    loadUserReviews(username);
+
+    // Reset star picker
+    selectedStarRating = 0;
+    updateStarPicker(0);
+    document.getElementById('ppReviewText').value = '';
+
+    // Check if current user already left a review
+    loadExistingReview(username);
+
+  } catch (err) {
+    console.error('Error loading partner profile:', err);
+  }
+}
+
+// Star picker
+function updateStarPicker(n) {
+  document.querySelectorAll('.star-pick').forEach(star => {
+    const val = parseInt(star.dataset.star);
+    star.style.color = val <= n ? '#f5a623' : '#dce4ef';
+  });
+}
+
+// Hover effects for star picker
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.star-pick').forEach(star => {
+    star.addEventListener('mouseenter', () => {
+      const hoverVal = parseInt(star.dataset.star);
+      document.querySelectorAll('.star-pick').forEach(s => {
+        s.style.color = parseInt(s.dataset.star) <= hoverVal ? '#f5a623' : '#dce4ef';
+      });
+    });
+    star.addEventListener('mouseleave', () => {
+      updateStarPicker(selectedStarRating);
+    });
+  });
+});
+
+// Submit a review
+async function submitReview() {
+  if (!chatPartner) return;
+  if (selectedStarRating === 0) {
+    alert('Please select a star rating (1–5).');
+    return;
+  }
+
+  const reviewText = document.getElementById('ppReviewText').value.trim();
+
+  try {
+    const res = await fetch(`${API_BASE}/reviews`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: currentUser,
+        to: chatPartner,
+        rating: selectedStarRating,
+        text: reviewText
+      })
+    });
+
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch(e) {
+      console.error('Server response was not JSON:', text);
+      alert('Server error — check that your server is running and has the /api/reviews endpoint.');
+      return;
+    }
+
+    if (!res.ok || !data.success) throw new Error(data.message || 'Failed to submit review.');
+
+    showToast(data.message || '✅ Review submitted!', 'success');
+    loadUserReviews(chatPartner);
+    loadExistingReview(chatPartner);
+  } catch (err) {
+    alert('Error: ' + err.message);
+  }
+}
+
+// Load all reviews for a user (partner profile sidebar)
+async function loadUserReviews(username) {
+  try {
+    const res = await fetch(`${API_BASE}/reviews/${encodeURIComponent(username)}`);
+    if (!res.ok) { console.error('Reviews endpoint returned', res.status); return; }
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch(e) { return; }
+    const reviews = data.success ? (data.reviews || []) : [];
+
+    const avgContainer = document.getElementById('ppAvgRating');
+    const avgStars = document.getElementById('ppAvgStars');
+    const countEl = document.getElementById('ppRatingCount');
+    const listEl = document.getElementById('ppReviewsList');
+
+    if (!avgContainer || !listEl) return;
+
+    if (reviews.length === 0) {
+      avgContainer.textContent = '—';
+      avgStars.textContent = '☆☆☆☆☆';
+      countEl.textContent = '(0 reviews)';
+      listEl.innerHTML = '<div style="text-align:center;color:#aab5c0;font-size:0.78rem;padding:16px 0;font-family:Poppins,sans-serif;">No reviews yet</div>';
+      return;
+    }
+
+    const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+    avgContainer.textContent = avg.toFixed(1);
+    avgStars.textContent = renderStarString(Math.round(avg));
+    countEl.textContent = `(${reviews.length} review${reviews.length !== 1 ? 's' : ''})`;
+
+    listEl.innerHTML = reviews.map(r => {
+      const initial = r.from.charAt(0).toUpperCase();
+      const date = new Date(r.timestamp).toLocaleDateString();
+      const stars = renderStarString(r.rating);
+      return `
+        <div style="background:#fff;border-radius:10px;padding:12px 14px;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#1b3d7a,#2563eb);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.65rem;flex-shrink:0;">${initial}</div>
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+                <div style="font-size:0.78rem;font-weight:700;color:#1a2a3a;">${r.from}</div>
+                <div style="font-size:0.62rem;color:#aab5c0;">${date}</div>
+              </div>
+              <div style="font-size:0.82rem;color:#f5a623;letter-spacing:1px;">${stars}</div>
+            </div>
+          </div>
+          ${r.text ? `<div style="font-size:0.75rem;color:#4a5a6a;line-height:1.5;font-family:Poppins,sans-serif;">${r.text}</div>` : ''}
+        </div>`;
+    }).join('');
+
+  } catch (err) {
+    console.error('Error loading reviews:', err);
+  }
+}
+
+// Check if current user already reviewed this person
+async function loadExistingReview(username) {
+  try {
+    const res = await fetch(`${API_BASE}/reviews/${encodeURIComponent(username)}`);
+    if (!res.ok) return;
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch(e) { return; }
+    const reviews = data.success ? (data.reviews || []) : [];
+    const existing = reviews.find(r => r.from === currentUser);
+
+    if (existing) {
+      selectedStarRating = existing.rating;
+      updateStarPicker(existing.rating);
+      document.getElementById('ppReviewText').value = existing.text || '';
+    }
+  } catch (err) {
+    console.error('Error checking existing review:', err);
+  }
+}
+
+// Load profile reviews (for own profile page)
+async function loadProfileReviews() {
+  try {
+    const res = await fetch(`${API_BASE}/reviews/${encodeURIComponent(currentUser)}`);
+    if (!res.ok) return;
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch(e) { return; }
+    const reviews = data.success ? (data.reviews || []) : [];
+
+    const badge = document.getElementById('profileAvgBadge');
+    const listEl = document.getElementById('profileReviewsList');
+    if (!badge || !listEl) return;
+
+    if (reviews.length === 0) {
+      badge.textContent = '⭐ —';
+      listEl.innerHTML = '<div style="text-align:center;color:#aab5c0;font-size:0.82rem;padding:20px 0;font-family:Poppins,sans-serif;">No reviews yet. Reviews from other users will appear here.</div>';
+      return;
+    }
+
+    const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+    badge.textContent = `⭐ ${avg.toFixed(1)}`;
+
+    listEl.innerHTML = reviews.map(r => {
+      const initial = r.from.charAt(0).toUpperCase();
+      const stars = renderStarString(r.rating);
+      const date = new Date(r.timestamp).toLocaleDateString();
+      return `
+        <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #f0f4f8;">
+          <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1b3d7a,#2563eb);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.75rem;flex-shrink:0;">${initial}</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+              <div style="font-size:0.78rem;font-weight:700;color:#1a2a3a;">${r.from}</div>
+              <div style="font-size:0.62rem;color:#aab5c0;">${date}</div>
+            </div>
+            <div style="font-size:0.82rem;color:#f5a623;letter-spacing:1px;margin-bottom:4px;">${stars}</div>
+            ${r.text ? `<div style="font-size:0.78rem;color:#4a5a6a;line-height:1.5;">${r.text}</div>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+
+  } catch (err) {
+    console.error('Error loading profile reviews:', err);
+  }
+}
+
+// Render star string
+function renderStarString(n) {
+  return '★'.repeat(Math.max(0, Math.min(5, n))) + '☆'.repeat(Math.max(0, 5 - Math.min(5, n)));
+}
 
 // Load inbox
 function loadInbox() {
@@ -1422,27 +1794,55 @@ function loadInbox() {
       const inboxList = document.getElementById('inboxList');
       const usernames = (data.usernames || []).filter(username => username !== currentUser);
       if (!usernames.length) {
-        inboxList.innerHTML = '<div style="color:#888;">No users found.</div>';
+        inboxList.innerHTML = '<div style="color:#aab5c0;font-size:0.85rem;padding:20px 8px;text-align:center;font-family:Poppins,sans-serif;">No users found.</div>';
         return;
       }
-      inboxList.innerHTML = usernames.map(u =>
-        `<button onclick="openChat('${u}')" style="
-          text-align:left;
-          padding:8px 12px;
-          border-radius:8px;
-          border:none;
-          background:#f0f4f8;
-          cursor:pointer;
-          width:100%;
-        ">${u}</button>`
-      ).join('');
+      inboxList.innerHTML = usernames.map(u => {
+        const initial = u.charAt(0).toUpperCase();
+        return `<button onclick="openChat('${u}')" id="inbox-${u}" style="
+          display:flex;align-items:center;gap:12px;
+          text-align:left;padding:10px 14px;
+          border-radius:10px;border:none;
+          background:transparent;cursor:pointer;
+          width:100%;font-family:Poppins,sans-serif;
+          transition:background 0.15s;
+        " onmouseover="this.style.background='#e8eff6'" onmouseout="if(!this.classList.contains('inbox-active'))this.style.background='transparent'">
+          <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1b3d7a,#2563eb);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.8rem;flex-shrink:0;">${initial}</div>
+          <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.85rem;font-weight:600;color:#1a2a3a;">${u}</div>
+        </button>`;
+      }).join('');
     });
 }
 
 // Open chat with a user
 function openChat(username) {
+  document.querySelectorAll('#inboxList button').forEach(btn => {
+    btn.classList.remove('inbox-active');
+    btn.style.background = 'transparent';
+  });
+  const activeBtn = document.getElementById('inbox-' + username);
+  if (activeBtn) {
+    activeBtn.classList.add('inbox-active');
+    activeBtn.style.background = '#e0eaf5';
+  }
+
   chatPartner = username;
+  const initial = username.charAt(0).toUpperCase();
   document.getElementById('chatPartnerName').textContent = username;
+  document.getElementById('chatPartnerStatus').textContent = 'Online';
+  document.getElementById('chatAvatarHeader').textContent = initial;
+
+  // Show the View Profile button
+  document.getElementById('viewPartnerProfileBtn').style.display = 'inline-flex';
+
+  // Close profile panel when switching users
+  if (partnerProfileOpen) {
+    const panel = document.getElementById('partnerProfilePanel');
+    panel.style.width = '0';
+    panel.style.borderLeft = '0';
+    partnerProfileOpen = false;
+  }
+
   loadMessages();
 }
 
@@ -1454,26 +1854,31 @@ function loadMessages() {
     .then(data => {
       const msgs = data.messages || [];
       const box = document.getElementById('chatBox');
+      if (!msgs.length) {
+        box.innerHTML = '<div style="text-align:center;color:#aab5c0;font-size:0.85rem;margin:auto;font-family:Poppins,sans-serif;">No messages yet. Say hello! 👋</div>';
+        return;
+      }
       box.innerHTML = msgs.map(m => {
         const isMe = m.from === currentUser;
-        return `<div style="
-          display:flex;
-          justify-content:${isMe ? 'flex-end' : 'flex-start'};
-        ">
-          <div style="
-            max-width:70%;
-            padding:8px 14px;
-            border-radius:16px;
-            background:${isMe ? '#1b3d7a' : '#e0e8f0'};
-            color:${isMe ? '#fff' : '#1a2a3a'};
-            font-size:.95rem;
-            font-family:Poppins,sans-serif;
-          ">
-            ${m.text}
+        const time = new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return `<div style="display:flex;justify-content:${isMe ? 'flex-end' : 'flex-start'};align-items:flex-end;gap:6px;">
+          ${!isMe ? `<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#1b3d7a,#2563eb);display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.65rem;font-weight:700;flex-shrink:0;">${m.from.charAt(0).toUpperCase()}</div>` : ''}
+          <div style="max-width:65%;display:flex;flex-direction:column;align-items:${isMe ? 'flex-end' : 'flex-start'};">
+            <div style="
+              padding:10px 16px;
+              border-radius:${isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px'};
+              background:${isMe ? 'linear-gradient(135deg,#1b3d7a,#2563eb)' : '#fff'};
+              color:${isMe ? '#fff' : '#1a2a3a'};
+              font-size:0.88rem;
+              font-family:Poppins,sans-serif;
+              box-shadow:0 1px 4px rgba(0,0,0,0.06);
+              word-break:break-word;
+            ">${m.text}</div>
+            <div style="font-size:0.65rem;color:#aab5c0;margin-top:3px;padding:0 4px;font-family:Poppins,sans-serif;">${time}</div>
           </div>
         </div>`;
       }).join('');
-      box.scrollTop = box.scrollHeight; // scroll to bottom
+      box.scrollTop = box.scrollHeight;
     });
 }
 

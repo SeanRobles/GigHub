@@ -93,13 +93,23 @@ if (!localStorage.getItem('gighub_user')) {
 
       <div class="dash-topbar__right">
         <button class="dash-change-role" onclick="openRoleModal()">Change Role</button>
-        <button class="dash-notif-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
-          <span class="dash-notif-badge"></span>
-        </button>
+        <div style="position:relative;">
+          <button class="dash-notif-btn" id="notifBellBtn" onclick="toggleNotifDropdown()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span class="dash-notif-badge" id="notifBadge" style="display:none;"></span>
+          </button>
+          <!-- Notification Dropdown -->
+          <div id="notifDropdown" style="display:none;position:absolute;top:calc(100% + 8px);right:0;width:340px;max-height:420px;background:#fff;border-radius:14px;box-shadow:0 8px 40px rgba(0,0,0,0.18);z-index:9999;overflow:hidden;font-family:Poppins,sans-serif;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1.5px solid #e8eff6;">
+              <span style="font-weight:700;font-size:0.95rem;color:#1b3d7a;">Notifications</span>
+              <button onclick="markAllNotifRead()" style="background:none;border:none;font-family:Poppins,sans-serif;font-size:0.72rem;font-weight:600;color:#2563eb;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background 0.15s;" onmouseover="this.style.background='#e8f0fe'" onmouseout="this.style.background='none'">Mark all read</button>
+            </div>
+            <div id="notifList" style="max-height:350px;overflow-y:auto;padding:8px 0;"></div>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -794,6 +804,71 @@ if (!localStorage.getItem('gighub_user')) {
   }
 
   /* ══════════════════════════════════════════
+     HELPER FUNCTIONS
+     ══════════════════════════════════════════ */
+
+  /* Show a toast notification */
+  function showToast(message, type) {
+    let toast = document.getElementById('gighubToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'gighubToast';
+      toast.style.cssText = 'position:fixed;top:24px;right:24px;z-index:99999;padding:14px 28px;border-radius:12px;font-family:Poppins,sans-serif;font-size:0.88rem;font-weight:600;color:#fff;box-shadow:0 4px 24px rgba(0,0,0,0.18);transform:translateY(-20px);opacity:0;transition:all 0.35s ease;pointer-events:none;max-width:400px;';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    if (type === 'success') toast.style.background = 'linear-gradient(135deg,#16a34a,#22c55e)';
+    else if (type === 'warning') toast.style.background = 'linear-gradient(135deg,#ea580c,#f59e0b)';
+    else toast.style.background = 'linear-gradient(135deg,#ef4444,#f87171)';
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-20px)';
+    }, 3000);
+  }
+
+  /* Replace a display element with an editable input */
+  function replaceWithInput(displayId, editId, value, fontSize, fontWeight, isTextarea) {
+    const display = document.getElementById(displayId);
+    if (!display) return;
+    display.style.display = 'none';
+
+    const wrap = document.createElement('div');
+    wrap.id = editId + '-wrap';
+
+    let el;
+    if (isTextarea) {
+      el = document.createElement('textarea');
+      el.rows = 3;
+      el.style.resize = 'vertical';
+    } else {
+      el = document.createElement('input');
+      el.type = 'text';
+    }
+    el.id = editId;
+    el.value = value || '';
+    el.style.cssText = `width:100%;font-size:${fontSize};font-weight:${fontWeight};font-family:Poppins,sans-serif;border:1.5px solid #1b3d7a;border-radius:8px;padding:8px 12px;outline:none;background:#f7fbff;box-shadow:0 0 0 2px rgba(27,61,122,0.08);box-sizing:border-box;`;
+    wrap.appendChild(el);
+    display.parentNode.insertBefore(wrap, display.nextSibling);
+  }
+
+  /* Get the value from an edit input, falling back to the display element */
+  function getEditVal(editId, displayId) {
+    const el = document.getElementById(editId);
+    if (el) return el.value;
+    const display = document.getElementById(displayId);
+    return display ? display.textContent : '';
+  }
+
+  /* Star picker click handler */
+  function pickStar(n) {
+    selectedStarRating = n;
+    updateStarPicker(n);
+  }
+
+  /* ══════════════════════════════════════════
      PROFILE — render & edit (role-independent)
      ══════════════════════════════════════════ */
   function renderProfile() {
@@ -1374,8 +1449,9 @@ if (!localStorage.getItem('gighub_user')) {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || 'Failed to accept job.');
-      alert('Job accepted!');
+      showToast('Job accepted!', 'success');
       await loadJobsForRole();
+      loadNotifications_UI();
     } catch (err) {
       alert('Error: ' + err.message);
     }
@@ -1849,7 +1925,7 @@ function openChat(username) {
 // Load messages
 function loadMessages() {
   if (!chatPartner) return;
-  fetch(`${API_BASE}/messages?user1=${encodeURIComponent(currentUser)}`)
+  fetch(`${API_BASE}/messages?user1=${encodeURIComponent(currentUser)}&user2=${encodeURIComponent(chatPartner)}`)
     .then(res => res.json())
     .then(data => {
       const msgs = data.messages || [];
@@ -1911,7 +1987,125 @@ function sendMessage(e) {
 // Load inbox on page load
 window.addEventListener('load', () => {
   loadInbox();
+  loadNotifications_UI();
+  // Poll for new notifications every 30 seconds
+  setInterval(loadNotifications_UI, 30000);
 });
+
+// ══════════════════════════════════════════
+// NOTIFICATIONS UI
+// ══════════════════════════════════════════
+let notifDropdownOpen = false;
+
+function toggleNotifDropdown() {
+  const dd = document.getElementById('notifDropdown');
+  notifDropdownOpen = !notifDropdownOpen;
+  dd.style.display = notifDropdownOpen ? 'block' : 'none';
+  if (notifDropdownOpen) loadNotifications_UI();
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  const dd = document.getElementById('notifDropdown');
+  const btn = document.getElementById('notifBellBtn');
+  if (notifDropdownOpen && dd && btn && !dd.contains(e.target) && !btn.contains(e.target)) {
+    notifDropdownOpen = false;
+    dd.style.display = 'none';
+  }
+});
+
+async function loadNotifications_UI() {
+  if (!currentUser) return;
+  try {
+    const res = await fetch(`${API_BASE}/notifications/${encodeURIComponent(currentUser)}`);
+    const data = await res.json();
+    if (!data.success) return;
+    const notifs = data.notifications || [];
+    const unread = notifs.filter(n => !n.read).length;
+
+    // Update badge
+    const badge = document.getElementById('notifBadge');
+    if (unread > 0) {
+      badge.textContent = unread > 9 ? '9+' : unread;
+      badge.style.display = '';
+    } else {
+      badge.style.display = 'none';
+    }
+
+    // Render list
+    const listEl = document.getElementById('notifList');
+    if (!notifs.length) {
+      listEl.innerHTML = '<div style="text-align:center;color:#aab5c0;font-size:0.82rem;padding:30px 16px;font-family:Poppins,sans-serif;">No notifications yet</div>';
+      return;
+    }
+
+    listEl.innerHTML = notifs.slice(0, 30).map(n => {
+      const time = timeAgo(n.timestamp);
+      const icon = n.type === 'job-accepted' ? '✋' : n.type === 'job-completed' ? '✅' : '🔔';
+      const unreadDot = !n.read ? '<div style="width:8px;height:8px;border-radius:50%;background:#2563eb;flex-shrink:0;"></div>' : '';
+      const bg = !n.read ? 'background:#f0f6ff;' : '';
+      return `
+        <div onclick="handleNotifClick('${n.id}','${n.type}','${n.jobId || ''}')" style="display:flex;align-items:flex-start;gap:10px;padding:12px 18px;cursor:pointer;transition:background 0.15s;${bg}" onmouseover="this.style.background='#f4f7fb'" onmouseout="this.style.background='${!n.read ? '#f0f6ff' : 'transparent'}'">
+          <div style="font-size:1.2rem;flex-shrink:0;margin-top:2px;">${icon}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.8rem;color:#1a2a3a;line-height:1.4;word-break:break-word;">${n.message}</div>
+            <div style="font-size:0.68rem;color:#8a9baa;margin-top:4px;">${time}</div>
+          </div>
+          ${unreadDot}
+        </div>`;
+    }).join('');
+  } catch (err) {
+    console.error('Error loading notifications:', err);
+  }
+}
+
+async function handleNotifClick(notifId, type, jobId) {
+  // Mark as read
+  try {
+    await fetch(`${API_BASE}/notifications/read`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: currentUser, ids: [notifId] })
+    });
+  } catch(e) {}
+
+  // Navigate to the relevant page
+  if (type === 'job-accepted' || type === 'job-completed') {
+    // Go to services/jobs page
+    const svcBtn = document.querySelector('[data-page=services]');
+    if (svcBtn) setPage(svcBtn);
+  }
+
+  // Close dropdown and refresh
+  notifDropdownOpen = false;
+  document.getElementById('notifDropdown').style.display = 'none';
+  loadNotifications_UI();
+}
+
+async function markAllNotifRead() {
+  if (!currentUser) return;
+  try {
+    await fetch(`${API_BASE}/notifications/read`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: currentUser })
+    });
+    loadNotifications_UI();
+  } catch(e) {}
+}
+
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  const sec = Math.floor(diff / 1000);
+  if (sec < 60) return 'Just now';
+  const min = Math.floor(sec / 60);
+  if (min < 60) return min + 'm ago';
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return hr + 'h ago';
+  const d = Math.floor(hr / 24);
+  if (d < 7) return d + 'd ago';
+  return new Date(ts).toLocaleDateString();
+}
 
     function saveSettings(e, options = {}) {
     if (e) e.preventDefault();

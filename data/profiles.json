@@ -6,7 +6,7 @@
       "password": "SEAnrobles457@gmail.com",
       "verified": true,
       "age": "21",
-      "currentRole": "client",
+      "currentRole": "freelancer",
       "roles": {
         "freelancer": {
           "name": "sean robles",
@@ -56,7 +56,7 @@
       "acceptedServices": [],
       "createdServices": [],
       "createdAt": "2026-03-11T20:04:41.908Z",
-      "updatedAt": "2026-03-12T00:55:02.588Z"
+      "updatedAt": "2026-03-12T01:14:07.572Z"
     },
     "sentientmonkey2040@gmail.com": {
       "username": "sentientmonkey2040@gmail.com",
@@ -64,7 +64,7 @@
       "password": "sentientmonkey2040@gmail.com",
       "verified": true,
       "age": "21",
-      "currentRole": "freelancer",
+      "currentRole": "client",
       "roles": {
         "freelancer": {
           "name": "Juan Juan",
@@ -72,7 +72,7 @@
           "bio": "",
           "languages": "",
           "location": "",
-          "skill": "",
+          "skill": "csgo",
           "tools": "",
           "level": "",
           "years": "",
@@ -89,23 +89,23 @@
           "avatarSrc": null
         },
         "client": {
-          "name": "Juan Juan",
-          "title": "",
-          "bio": "",
-          "languages": "",
+          "name": "Jane Doe",
+          "title": "Jane Doe",
+          "bio": "skibidi bopbopbop",
+          "languages": "I am jane doe",
           "location": "",
-          "skill": "",
-          "tools": "",
-          "level": "",
-          "years": "",
-          "hourly": "",
-          "fixedMin": "",
-          "fixedMax": "",
-          "payment": "",
-          "degree": "",
-          "institution": "",
-          "gradYear": "",
-          "certs": "",
+          "skill": "Coding",
+          "tools": "Vscode",
+          "level": "Advanced",
+          "years": "10years",
+          "hourly": "10,000",
+          "fixedMin": "10,000",
+          "fixedMax": "30,000",
+          "payment": "CASH",
+          "degree": "BSCS",
+          "institution": "Mapua",
+          "gradYear": "2026",
+          "certs": "CISCO",
           "portfolioFile": null,
           "portfolioFileName": null,
           "avatarSrc": null
@@ -114,7 +114,7 @@
       "acceptedServices": [],
       "createdServices": [],
       "createdAt": "2026-03-11T22:21:56.535Z",
-      "updatedAt": "2026-03-11T23:24:38.915Z"
+      "updatedAt": "2026-03-12T01:20:48.081Z"
     },
     "BoogieBops": {
       "username": "BoogieBops",
@@ -175,5 +175,5 @@
       "updatedAt": "2026-03-12T00:37:43.681Z"
     }
   },
-  "lastUpdated": "2026-03-12T00:55:02.588Z"
+  "lastUpdated": "2026-03-12T01:20:48.081Z"
 }

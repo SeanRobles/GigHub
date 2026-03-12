@@ -20,6 +20,7 @@ const MESSAGES_FILE = path.join(DATA_DIR, 'messages.json');
 const JOBS_FILE = path.join(DATA_DIR, 'jobs.json');
 const CATEGORIES_FILE = path.join(DATA_DIR, 'categories.json');
 const REVIEWS_FILE = path.join(ROOT_DIR, 'data', 'reviews.json');
+const NOTIFICATIONS_FILE = path.join(DATA_DIR, 'notifications.json');
 
 const EMAILJS_SERVICE_ID = process.env.EMAILJS_SERVICE_ID || 'service_1l0xsny';
 const EMAILJS_PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY || process.env.EMAILJS_USER_ID || '';
@@ -166,12 +167,21 @@ function loadCategories() {
   return readJson(CATEGORIES_FILE, { jobCategories: [] });
 }
 
+function loadNotifications() {
+  return readJson(NOTIFICATIONS_FILE, []);
+}
+
+function saveNotifications(notifications) {
+  writeJson(NOTIFICATIONS_FILE, notifications);
+}
+
 function ensureDataFiles() {
   ensureDir(DATA_DIR);
   if (!fs.existsSync(PROFILES_FILE)) writeJson(PROFILES_FILE, defaultProfilesDb());
   if (!fs.existsSync(SERVICES_FILE)) writeJson(SERVICES_FILE, []);
   if (!fs.existsSync(MESSAGES_FILE)) writeJson(MESSAGES_FILE, []);
   if (!fs.existsSync(JOBS_FILE)) writeJson(JOBS_FILE, []);
+  if (!fs.existsSync(NOTIFICATIONS_FILE)) writeJson(NOTIFICATIONS_FILE, []);
   if (!fs.existsSync(CATEGORIES_FILE)) writeJson(CATEGORIES_FILE, {
     jobCategories: [
       { id: "web-dev", name: "Web Development", icon: "💻", subcategories: ["Frontend", "Backend", "Full Stack", "WordPress", "Shopify"] },
@@ -479,7 +489,7 @@ app.post('/api/profiles/save', (req, res) => {
     return res.status(400).json({ success: false, message: 'username, role, and profile are required.' });
   }
 
-  const profiles = readJSON(PROFILES_FILE);
+  const profiles = readJson(PROFILES_FILE, defaultProfilesDb());
   const user = profiles.users?.[username];
   if (!user) {
     return res.status(404).json({ success: false, message: 'User not found.' });
@@ -490,7 +500,7 @@ app.post('/api/profiles/save', (req, res) => {
   user.updatedAt = isoNow();
   profiles.lastUpdated = isoNow();
 
-  writeJSON(PROFILES_FILE, profiles);
+  writeJson(PROFILES_FILE, profiles);
   res.json({ success: true, user, message: 'Profile saved.' });
 });
 
@@ -693,10 +703,40 @@ app.patch('/api/jobs/:id', (req, res) => {
     job.status = 'in-progress';
     job.acceptedBy = acceptedBy;
     job.acceptedAt = isoNow();
+
+    // Create notification for the job poster
+    const notifications = loadNotifications();
+    notifications.push({
+      id: Date.now().toString(),
+      to: job.postedBy,
+      type: 'job-accepted',
+      message: `${acceptedBy} accepted your job "${job.title}"`,
+      jobId: job.id,
+      from: acceptedBy,
+      read: false,
+      timestamp: Date.now()
+    });
+    saveNotifications(notifications);
   } else if (status === 'completed') {
     job.status = 'completed';
     job.completed = true;
     job.completedAt = isoNow();
+
+    // Notify the freelancer that the job is marked completed
+    if (job.acceptedBy) {
+      const notifications = loadNotifications();
+      notifications.push({
+        id: Date.now().toString(),
+        to: job.acceptedBy,
+        type: 'job-completed',
+        message: `Job "${job.title}" has been marked as completed`,
+        jobId: job.id,
+        from: job.postedBy,
+        read: false,
+        timestamp: Date.now()
+      });
+      saveNotifications(notifications);
+    }
   } else if (status === 'open') {
     job.status = 'open';
     job.acceptedBy = null;
@@ -916,6 +956,35 @@ app.delete('/api/reviews/:reviewId', (req, res) => {
   allReviews = allReviews.filter(r => r.id !== reviewId);
   writeReviews(allReviews);
   res.json({ success: true, message: 'Review deleted.' });
+});
+
+/* ══════════════════════════════════════════
+   NOTIFICATIONS
+   ══════════════════════════════════════════ */
+
+// GET notifications for a user
+app.get('/api/notifications/:username', (req, res) => {
+  const username = decodeURIComponent(req.params.username);
+  const all = loadNotifications();
+  const userNotifs = all.filter(n => n.to === username);
+  userNotifs.sort((a, b) => b.timestamp - a.timestamp);
+  res.json({ success: true, notifications: userNotifs });
+});
+
+// PATCH mark notification(s) as read
+app.patch('/api/notifications/read', (req, res) => {
+  const { username, ids } = req.body;
+  if (!username) return res.status(400).json({ success: false, message: 'Username required.' });
+
+  const all = loadNotifications();
+  let count = 0;
+  all.forEach(n => {
+    if (n.to === username && (!ids || ids.includes(n.id))) {
+      if (!n.read) { n.read = true; count++; }
+    }
+  });
+  saveNotifications(all);
+  res.json({ success: true, markedRead: count });
 });
 
 const PORT = process.env.PORT || 3000;

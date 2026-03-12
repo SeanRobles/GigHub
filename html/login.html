@@ -100,7 +100,7 @@
       btn.style.opacity = '0.75';
       btn.style.pointerEvents = 'none';
 
-      fetch('http://localhost:3000/api/auth/login', {
+      fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identifier: username, password })

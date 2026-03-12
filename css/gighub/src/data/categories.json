@@ -1,0 +1,64 @@
+{
+  "jobCategories": [
+    {
+      "id": "web-dev",
+      "name": "Web Development",
+      "icon": "💻",
+      "subcategories": ["Frontend", "Backend", "Full Stack", "WordPress", "Shopify"]
+    },
+    {
+      "id": "design",
+      "name": "Design",
+      "icon": "🎨",
+      "subcategories": ["UI/UX Design", "Graphic Design", "Logo Design", "Branding", "Illustration"]
+    },
+    {
+      "id": "mobile",
+      "name": "Mobile Development",
+      "icon": "📱",
+      "subcategories": ["iOS", "Android", "React Native", "Flutter"]
+    },
+    {
+      "id": "writing",
+      "name": "Writing & Content",
+      "icon": "✍️",
+      "subcategories": ["Copywriting", "Blog Posts", "Technical Writing", "Social Media"]
+    },
+    {
+      "id": "marketing",
+      "name": "Digital Marketing",
+      "icon": "📊",
+      "subcategories": ["SEO", "SEM", "Social Media Marketing", "Email Marketing"]
+    },
+    {
+      "id": "video",
+      "name": "Video & Animation",
+      "icon": "🎬",
+      "subcategories": ["Video Editing", "Animation", "Motion Graphics", "Voiceover"]
+    },
+    {
+      "id": "business",
+      "name": "Business Services",
+      "icon": "💼",
+      "subcategories": ["Virtual Assistant", "Data Entry", "Bookkeeping", "Consultation"]
+    },
+    {
+      "id": "music",
+      "name": "Music & Audio",
+      "icon": "🎵",
+      "subcategories": ["Music Production", "Sound Design", "Podcast Editing", "Transcription"]
+    },
+    {
+      "id": "data",
+      "name": "Data & Analytics",
+      "icon": "📈",
+      "subcategories": ["Data Analysis", "Data Visualization", "Business Intelligence", "Database Design"]
+    },
+    {
+      "id": "consulting",
+      "name": "Consulting",
+      "icon": "🤝",
+      "subcategories": ["IT Consulting", "Business Consulting", "Career Coaching", "Strategy"]
+    }
+  ]
+}

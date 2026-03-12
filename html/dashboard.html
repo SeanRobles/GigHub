@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GigHub – Dashboard</title>
-  <link rel="stylesheet" href="../css/gighub.css" />
+  <link rel="stylesheet" href="/css/gighub.css" />
+  <!-- Remove the animations.js reference if the file doesn't exist -->
+  <!-- <script src="../js/animations.js"></script> -->
 </head>
 <body>
 
@@ -148,11 +150,14 @@ if (!localStorage.getItem('gighub_user')) {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
             Post Job
           </button>
-          <!-- Freelancer: Browse Jobs -->
-          <button id="browseJobsBtn" class="services-add-btn" style="display:none;" onclick="openBrowseJobs()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-            Browse & Accept Jobs
-          </button>
+          <!-- Freelancer: Browse Jobs Search Bar -->
+          <div id="browseJobsSearchBar" style="display:none;flex:1;min-width:200px;max-width:420px;position:relative;">
+            <input type="text" id="browseKeywordToolbar" placeholder="Search jobs by keyword..." 
+              style="width:100%;padding:10px 14px 10px 36px;border:1.5px solid #d0dbe6;border-radius:10px;font-family:Poppins,sans-serif;font-size:0.82rem;outline:none;transition:border-color 0.2s;"
+              onfocus="this.style.borderColor='var(--cyan)'" onblur="this.style.borderColor='#d0dbe6'"
+              oninput="document.getElementById('browseKeyword').value=this.value;applyBrowseFilters()" />
+            <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:0.4;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
         </div>
 
         <!-- Header bar -->
@@ -662,23 +667,51 @@ if (!localStorage.getItem('gighub_user')) {
     console.log('🔖 setPage called with:', page);
     document.querySelectorAll('.dash-nav__item').forEach(el => el.classList.remove('active'));
     btn.classList.add('active');
-    document.querySelectorAll('[id^="page-"]').forEach(el => el.style.display = 'none');
-    document.getElementById('page-' + page).style.display = '';
-    if (page === 'dashboard') loadDashboardFeed();
+
+    // Find current visible page and target page
+    const allPages = document.querySelectorAll('[id^="page-"]');
+    let outEl = null;
+    allPages.forEach(el => {
+      if (el.style.display !== 'none' && el.id !== 'page-' + page) outEl = el;
+    });
+    const inEl = document.getElementById('page-' + page);
+
+    // Use animated transition
+    if (typeof GigHubAnimations !== 'undefined') {
+      GigHubAnimations.transitionPages(outEl, inEl, () => {
+        // Hide all other pages (safety)
+        allPages.forEach(el => { if (el !== inEl) el.style.display = 'none'; });
+      }).then(() => {
+        afterPageSwitch(page);
+      });
+    } else {
+      // Fallback: no animation
+      allPages.forEach(el => el.style.display = 'none');
+      inEl.style.display = '';
+      afterPageSwitch(page);
+    }
+  }
+
+  function afterPageSwitch(page) {
+    if (page === 'dashboard') {
+      loadDashboardFeed();
+      if (typeof GigHubAnimations !== 'undefined') GigHubAnimations.animateWelcome();
+    }
     if (page === 'services') {
       console.log('📂 Switching to Services tab - will load and render jobs');
       isBrowsingAvailableJobs = false;
-      activeJobFilter = 'all'; // Reset filter
-      // Hide browse search bar on page switch
+      activeJobFilter = 'all';
       const searchBar = document.getElementById('browseSearchBar');
       if (searchBar) searchBar.style.display = 'none';
       loadJobsForRole().then(() => {
         console.log('✅ loadJobsForRole completed, now rendering...');
         renderJobs(activeJobFilter);
         updateJobButtons();
-        // Reset filter buttons
         document.querySelectorAll('.services-tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.services-tab')[0]?.classList.add('active');
+        if (typeof GigHubAnimations !== 'undefined') {
+          GigHubAnimations.staggerChildren('#jobsGrid', '.service-card');
+        }
       }).catch(err => {
         console.error('❌ Error loading jobs:', err);
         renderJobs(activeJobFilter);
@@ -751,23 +784,30 @@ if (!localStorage.getItem('gighub_user')) {
   function updateJobButtons() {
     const isFreelancer = currentRole === 'freelancer';
     const postBtn = document.getElementById('postJobBtn');
-    const browseBtn = document.getElementById('browseJobsBtn');
+    const browseSearchBar = document.getElementById('browseJobsSearchBar');
+    const filterBar = document.getElementById('browseSearchBar');
     
-    if (!postBtn || !browseBtn) {
+    if (!postBtn || !browseSearchBar) {
       console.warn('Job buttons not found in DOM');
       return;
     }
     
     if (isFreelancer) {
       postBtn.style.display = 'none';
-      browseBtn.style.display = 'inline-flex';
-      browseBtn.style.borderColor = '#1b3d7a';
-      browseBtn.style.color = '#1b3d7a';
+      browseSearchBar.style.display = 'flex';
+      // Auto-enter browse mode
+      if (!isBrowsingAvailableJobs) {
+        isBrowsingAvailableJobs = true;
+        populateBrowseCategoryFilter();
+      }
+      if (filterBar) filterBar.style.display = '';
     } else {
       postBtn.style.display = 'inline-flex';
-      browseBtn.style.display = 'none';
+      browseSearchBar.style.display = 'none';
       postBtn.style.borderColor = '#f08020';
       postBtn.style.color = '#f08020';
+      if (filterBar) filterBar.style.display = 'none';
+      isBrowsingAvailableJobs = false;
     }
   }
 
@@ -1464,21 +1504,26 @@ if (!localStorage.getItem('gighub_user')) {
   }
 
   function updateSubcategoryDropdown() {
-    const catSelect = document.getElementById('jobCategory');
+    const catId = document.getElementById('jobCategory')?.value;
     const subcatSelect = document.getElementById('jobSubcategory');
-    if (!catSelect || !subcatSelect) return;
-
-    const selectedCatId = catSelect.value;
-    const selectedCat = categories.find(cat => cat.id === selectedCatId);
+    if (!subcatSelect) return;
 
     subcatSelect.innerHTML = '<option value="">Select Subcategory</option>';
-    if (selectedCat && selectedCat.subcategories) {
-      selectedCat.subcategories.forEach(sub => {
+    if (!catId) {
+      subcatSelect.style.display = 'none';
+      return;
+    }
+    const cat = categories.find(c => c.id === catId);
+    if (cat && cat.subcategories) {
+      cat.subcategories.forEach(sub => {
         const opt = document.createElement('option');
         opt.value = sub;
         opt.textContent = sub;
         subcatSelect.appendChild(opt);
       });
+      subcatSelect.style.display = '';
+    } else {
+      subcatSelect.style.display = 'none';
     }
   }
 
@@ -1534,9 +1579,7 @@ if (!localStorage.getItem('gighub_user')) {
       else if (job.status === 'cancelled') { badgeClass = 'dash-badge--red'; statusLabel = 'Cancelled'; }
 
       const budgetText = (job.budgetMin || job.budgetMax)
-        ? `₱${job.budgetMin || 0} – ₱${job.budgetMax || 0}`
-        : 'Budget not set';
-
+        ? `₱${job.budgetMin || 0} – ₱${job.budgetMax || 0}` : 'Budget not set';
       const categoryLabel = getCategoryName(job.category);
       const subcatLabel = job.subcategory ? ` › ${job.subcategory}` : '';
       const postedDate = job.postedAt ? new Date(job.postedAt).toLocaleDateString() : '';
@@ -1603,16 +1646,10 @@ if (!localStorage.getItem('gighub_user')) {
   let allBrowseJobs = []; // unfiltered browse results cache
 
   function openBrowseJobs() {
-    isBrowsingAvailableJobs = !isBrowsingAvailableJobs;
-    activeJobFilter = 'all';
-
-    const searchBar = document.getElementById('browseSearchBar');
-    if (isBrowsingAvailableJobs) {
-      searchBar.style.display = '';
+    if (!isBrowsingAvailableJobs) {
+      isBrowsingAvailableJobs = true;
+      activeJobFilter = 'all';
       populateBrowseCategoryFilter();
-    } else {
-      searchBar.style.display = 'none';
-      clearBrowseFilters();
     }
     loadJobsForRole();
   }
@@ -2068,7 +2105,6 @@ async function loadUserReviews(username) {
     const avgStars = document.getElementById('ppAvgStars');
     const countEl = document.getElementById('ppRatingCount');
     const listEl = document.getElementById('ppReviewsList');
-
     if (!avgContainer || !listEl) return;
 
     if (reviews.length === 0) {
@@ -2089,18 +2125,15 @@ async function loadUserReviews(username) {
       const date = new Date(r.timestamp).toLocaleDateString();
       const stars = renderStarString(r.rating);
       return `
-        <div style="background:#fff;border-radius:10px;padding:12px 14px;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#1b3d7a,#2563eb);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.65rem;flex-shrink:0;">${initial}</div>
-            <div style="flex:1;">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
-                <div style="font-size:0.78rem;font-weight:700;color:#1a2a3a;">${r.from}</div>
-                <div style="font-size:0.62rem;color:#aab5c0;">${date}</div>
-              </div>
-              <div style="font-size:0.82rem;color:#f5a623;letter-spacing:1px;">${stars}</div>
+        <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #f0f4f8;">
+          <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1b3d7a,#2563eb);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.75rem;flex-shrink:0;">${initial}</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+              <div style="font-size:0.78rem;font-weight:700;color:#1a2a3a;">${r.from}</div>
+              <div style="font-size:0.62rem;color:#aab5c0;">${date}</div>
             </div>
+            <div style="font-size:0.82rem;color:#f5a623;letter-spacing:1px;">${stars}</div>
           </div>
-          ${r.text ? `<div style="font-size:0.75rem;color:#4a5a6a;line-height:1.5;font-family:Poppins,sans-serif;">${r.text}</div>` : ''}
         </div>`;
     }).join('');
 
@@ -2166,7 +2199,7 @@ async function loadProfileReviews() {
               <div style="font-size:0.62rem;color:#aab5c0;">${date}</div>
             </div>
             <div style="font-size:0.82rem;color:#f5a623;letter-spacing:1px;margin-bottom:4px;">${stars}</div>
-            ${r.text ? `<div style="font-size:0.78rem;color:#4a5a6a;line-height:1.5;">${r.text}</div>` : ''}
+            ${r.text ? `<div style="font-size:0.75rem;color:#4a5a6a;line-height:1.5;font-family:Poppins,sans-serif;">${r.text}</div>` : ''}
           </div>
         </div>`;
     }).join('');
@@ -2179,7 +2212,7 @@ async function loadProfileReviews() {
 // Load real activity counters from the server
 async function loadActivityCounters() {
   try {
-    const res = await fetch(`${API_BASE}/jobs/activity/${encodeURIComponent(currentUser)}?role=${encodeURIComponent(currentRole)}`);
+    const res = await fetch(`${API_BASE}/jobs/activity/${encodeURIComponent(currentUser)}`);
     const data = await res.json();
     if (!data.success) return;
 
@@ -2221,7 +2254,7 @@ function loadInbox() {
           width:100%;font-family:Poppins,sans-serif;
           transition:background 0.15s;
         " onmouseover="this.style.background='#e8eff6'" onmouseout="if(!this.classList.contains('inbox-active'))this.style.background='transparent'">
-          <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1b3d7a,#2563eb);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.8rem;flex-shrink:0;">${initial}</div>
+          <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1b3d7a,#2563eb);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.65rem;flex-shrink:0;">${initial}</div>
           <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.85rem;font-weight:600;color:#1a2a3a;">${u}</div>
         </button>`;
       }).join('');
@@ -2263,7 +2296,7 @@ function openChat(username) {
 // Load messages
 function loadMessages() {
   if (!chatPartner) return;
-  fetch(`${API_BASE}/messages?user1=${encodeURIComponent(currentUser)}&user2=${encodeURIComponent(chatPartner)}`)
+  fetch(`${API_BASE}/messages?user1=${encodeURIComponent(currentUser)}`)
     .then(res => res.json())
     .then(data => {
       const msgs = data.messages || [];

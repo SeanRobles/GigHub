@@ -1,0 +1,3 @@
+/api/*  /.netlify/functions/api/:splat  200
+/css/*  /css/:splat  200
+/Images/*  /Images/:splat  200
